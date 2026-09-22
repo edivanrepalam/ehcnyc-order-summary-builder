@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order Summary Builder | Elite Health Center NYC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#092e39;
+  --navy-2:#134656;
+  --blue:#8bcbdd;
+  --accent:#2a8ea8;
+  --ink:#0f2c36;
+  --muted:#58727e;
+  --danger:#c2413b;
+  --glass:rgba(255,255,255,.44);
+  --glass-strong:rgba(255,255,255,.62);
+  --glass-edge:rgba(255,255,255,.72);
+  --glass-shadow:0 12px 40px rgba(9,46,57,.10),inset 0 1px 0 rgba(255,255,255,.9);
+  --blur:blur(22px) saturate(170%);
+}
+*{box-sizing:border-box}
+html{background:#e2eef2}
+body{margin:0;min-height:100vh;font-family:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:-15%;z-index:-1;pointer-events:none;background:
+  radial-gradient(38% 34% at 12% 18%,rgba(139,203,221,.85),transparent 70%),
+  radial-gradient(30% 28% at 88% 12%,rgba(42,142,168,.38),transparent 70%),
+  radial-gradient(42% 38% at 78% 82%,rgba(139,203,221,.7),transparent 70%),
+  radial-gradient(30% 30% at 18% 88%,rgba(9,46,57,.20),transparent 70%),
+  radial-gradient(26% 24% at 50% 50%,rgba(255,255,255,.7),transparent 70%),
+  linear-gradient(160deg,#eaf4f7,#d9e9ef)}
+button{font:inherit}
+:focus-visible{outline:3px solid rgba(42,142,168,.5);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+.glass{background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass{background:rgba(255,255,255,.86)}
+}
+
+/* Top bar */
+.topbar{position:sticky;top:12px;z-index:20;margin:14px 28px 0;border-radius:20px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:16px;min-width:0}
+.brand-logo{height:38px;width:auto;display:block}
+.brand-divider{width:1px;height:34px;background:linear-gradient(180deg,transparent,rgba(9,46,57,.25),transparent)}
+.brand h1{margin:0;font-size:17px;font-weight:700;color:var(--navy);letter-spacing:-.01em}
+.brand p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+.order-chip{font-size:13px;font-weight:700;color:var(--navy);background:rgba(139,203,221,.35);border:1px solid rgba(255,255,255,.8);padding:8px 14px;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+@media (max-width:640px){
+  .topbar{margin:10px 12px 0;padding:12px 14px}
+  .brand-logo{height:28px}
+  .brand-divider,.brand div:last-child{display:none}
+}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,540px);gap:28px;padding:26px 28px 40px;max-width:1440px;margin:0 auto;align-items:start}
+@media (max-width:1100px){.layout{grid-template-columns:1fr;padding:18px 12px 32px}}
+
+.card{border-radius:22px;padding:22px 22px 24px;margin-bottom:24px}
+.card-head{display:flex;align-items:center;gap:10px;margin:0 0 18px}
+.card-head h2{margin:0;font-size:16px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:10px}
+.card-head h2::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px rgba(139,203,221,.3)}
+.count{margin-left:auto;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);color:var(--accent);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.span-3{grid-column:1/-1}
+@media (max-width:640px){.grid{grid-template-columns:1fr}.span-3{grid-column:auto}}
+
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:0 0 7px 3px}
+.field label .req{color:var(--danger)}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:rgba(255,255,255,.58);border:1px solid rgba(9,46,57,.09);border-radius:12px;padding:11px 13px;outline:none;box-shadow:inset 0 1px 2px rgba(9,46,57,.05);transition:border-color .15s,box-shadow .15s,background-color .15s}
+.field textarea{resize:vertical;min-height:74px;line-height:1.45}
+.field select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:36px;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2358727e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.field input:hover,.field select:hover,.field textarea:hover{background-color:rgba(255,255,255,.72)}
+.field input:focus,.field select:focus,.field textarea:focus{background-color:rgba(255,255,255,.9);border-color:var(--accent);box-shadow:0 0 0 4px rgba(139,203,221,.45)}
+.field input::placeholder,.field textarea::placeholder{color:#93a7b0}
+.field input:disabled,.field select:disabled{opacity:.4;cursor:not-allowed}
+.field.invalid input,.field.invalid select{border-color:var(--danger);box-shadow:0 0 0 3px rgba(194,65,59,.15)}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14.5px;pointer-events:none}
+.money input{padding-left:28px}
+.help{font-size:12px;color:var(--muted);margin:7px 3px 0;line-height:1.45}
+
+/* Line items */
+.item{position:relative;background:rgba(255,255,255,.34);border:1px solid rgba(255,255,255,.75);border-radius:16px;padding:14px 16px 18px 20px;margin-bottom:16px;box-shadow:0 4px 18px rgba(9,46,57,.06);overflow:hidden}
+.item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--blue),var(--accent))}
+.item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.item-title{font-weight:700;font-size:14.5px;color:var(--navy)}
+.item-actions{display:flex;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);color:var(--muted);cursor:pointer;transition:color .15s,background-color .15s}
+.icon-btn:hover{background:rgba(255,255,255,.9);color:var(--accent)}
+.icon-btn.danger:hover{color:var(--danger)}
+
+/* Buttons */
+.btn{border-radius:13px;padding:11px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--navy);background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85);box-shadow:0 4px 14px rgba(9,46,57,.07);transition:background-color .15s,transform .08s}
+.btn:hover{background:rgba(255,255,255,.85)}
+.btn:active{transform:scale(.98)}
+.btn-primary{color:#fff;border-color:rgba(255,255,255,.25);background:linear-gradient(135deg,var(--navy-2),var(--navy));box-shadow:0 8px 22px rgba(9,46,57,.28),inset 0 1px 0 rgba(255,255,255,.22)}
+.btn-primary:hover{background:linear-gradient(135deg,#1a5667,var(--navy))}
+.btn-add{width:100%;justify-content:center;border:1.5px dashed rgba(42,142,168,.45);background:rgba(255,255,255,.25);box-shadow:none;color:var(--accent);padding:14px}
+.btn-add:hover{background:rgba(255,255,255,.55)}
+
+/* Preview */
+.preview-col{position:sticky;top:100px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.screen{border-radius:24px;padding:12px}
+.screen-bar{display:flex;align-items:center;gap:7px;padding:2px 4px 12px}
+.screen-bar i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.8);border:1px solid rgba(9,46,57,.12)}
+.screen-bar span{margin-left:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+.device{display:inline-flex;margin-left:auto;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.8);border-radius:11px;padding:3px}
+.device button{border:0;background:transparent;font-size:12px;font-weight:700;padding:6px 11px;border-radius:8px;color:var(--muted);cursor:pointer}
+.device button.on{background:rgba(255,255,255,.95);color:var(--navy);box-shadow:0 2px 8px rgba(9,46,57,.1)}
+.frame-wrap{border-radius:16px;overflow:hidden;display:flex;justify-content:center;background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.7)}
+#preview{border:0;width:100%;height:calc(100vh - 230px);min-height:540px;display:block;background:#e3f0f5;transition:width .2s}
+@media (max-width:1100px){.preview-col{position:static}#preview{height:760px}}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,16px);color:var(--navy);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:92vw;text-align:center;background:rgba(255,255,255,.75)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{color:#fff;background:rgba(194,65,59,.9)}
+
+/* Order summary v6 extras */
+.span-2{grid-column:span 2}
+@media (max-width:640px){.span-2{grid-column:auto}}
+.help.center{text-align:center;margin-top:10px}
+.field label .sub{font-weight:500;color:#8aa0aa}
+.field label.pharmacy-label{display:flex;justify-content:flex-start;align-items:center;gap:4px}
+.field textarea.two-line{min-height:0;height:auto;resize:none}
+.field input.calc{background:rgba(139,203,221,.22);border-color:rgba(42,142,168,.3);color:var(--muted);font-weight:700;cursor:default;box-shadow:none}
+.field input.calc:focus{box-shadow:0 0 0 3px rgba(139,203,221,.35)}
+.field.hl label{color:var(--accent)}
+.field.hl input{background:rgba(139,203,221,.32);border-color:rgba(42,142,168,.55);font-weight:700}
+/* product block: accent edge as inset shadow so dropdown menus aren't clipped */
+.item{overflow:visible;padding-bottom:22px;box-shadow:inset 4px 0 0 #6fbdd2,0 4px 18px rgba(9,46,57,.06)}
+.item::before{display:none}
+.item-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ph-badge{font-size:11.5px;font-weight:700;color:var(--accent);background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);padding:3px 10px;border-radius:999px}
+.sub-head{margin:22px 0 12px;padding-top:16px;border-top:1px solid rgba(9,46,57,.09);font-size:13px;font-weight:700;color:var(--accent)}
+.sub-head.first{margin-top:4px;padding-top:0;border-top:0}
+/* Keep supplies on the third row of the product grid. */
+.item .supplies-field{grid-column:1}
+/* Editable units dropdown: always show the full list. */
+.card.units-open{position:relative;z-index:7}
+.units-combo{position:relative}
+.field .units-combo input{padding-right:42px}
+.units-toggle{position:absolute;right:4px;top:4px;bottom:4px;width:32px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:var(--muted);cursor:pointer}
+.units-toggle:hover:not(:disabled){background:rgba(139,203,221,.25)}
+.units-toggle:disabled{opacity:.4;cursor:not-allowed}
+.units-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;max-height:240px;overflow-y:auto;overscroll-behavior:contain;padding:6px;border-radius:12px;background:rgba(255,255,255,.97)}
+.units-menu[hidden]{display:none}
+.units-combo.opens-up .units-menu{top:auto;bottom:calc(100% + 6px)}
+.units-option{display:block;width:100%;padding:9px 10px;border:0;border-radius:8px;background:transparent;text-align:left;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+.units-option:hover,.units-option.is-active{background:rgba(139,203,221,.3)}
+.units-option[aria-selected=true]{font-weight:700;color:var(--accent)}
+/* multi-select dropdown */
+.card.menu-open{position:relative;z-index:6}
+.multi{position:relative}
+.multi-btn{display:block;width:100%;font:inherit;font-size:14.5px;color:var(--ink);text-align:left;background:rgba(255,255,255,.58) url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2358727e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 13px center;border:1px solid rgba(9,46,57,.09);border-radius:12px;padding:11px 36px 11px 13px;cursor:pointer;box-shadow:inset 0 1px 2px rgba(9,46,57,.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:border-color .15s,box-shadow .15s,background-color .15s}
+.multi-btn:hover{background-color:rgba(255,255,255,.72)}
+.multi-btn[aria-expanded=true]{background-color:rgba(255,255,255,.9);border-color:var(--accent);box-shadow:0 0 0 4px rgba(139,203,221,.45)}
+.multi-val.empty{color:#93a7b0}
+.multi-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;min-width:190px;border-radius:14px;padding:6px;background:rgba(255,255,255,.94)}
+.multi-menu[hidden]{display:none}
+.field .multi-opt{display:flex;align-items:center;gap:10px;margin:0;padding:9px 10px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer}
+.field .multi-opt:hover{background:rgba(139,203,221,.25)}
+.field .multi-opt input{width:17px;height:17px;flex:none;margin:0;padding:0;border:0;background:none;box-shadow:none;accent-color:var(--navy);cursor:pointer}
+/* delivery dates */
+/* extra links */
+.link-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto;gap:12px;align-items:end;margin-top:16px}
+.link-row .icon-btn{margin-bottom:3px}
+@media (max-width:640px){.link-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="topbar glass">
+  <div class="brand">
+    <img class="brand-logo" alt="EHCNYC Elite Health Center NYC">
+    <div class="brand-divider"></div>
+    <div>
+      <h1>Order summary</h1>
+      <p>Internal use</p>
+    </div>
+  </div>
+  <div class="order-chip" id="chipOrder">New order</div>
+</header>
+
+<main class="layout">
+  <section class="form-col">
+
+    <div class="card glass">
+      <div class="card-head"><h2>Patient information</h2></div>
+      <div class="grid">
+        <div class="field"><label>Name <span class="req">*</span></label><input data-k="name" placeholder="Last, First" autocomplete="off"></div>
+        <div class="field"><label>Shipping address</label><textarea data-k="address" class="two-line" rows="2" placeholder="Street, Apt&#10;City, State ZIP"></textarea></div>
+        <div class="field"><label>Instructions for courier</label><input data-k="courier" placeholder="n/a"></div>
+        <div class="field"><label>Signature at delivery</label><select data-k="signature" data-opts="signatureTypes"></select></div>
+        <div class="field"><label>Order requested via</label>
+        <div class="multi" id="viaMulti">
+          <button type="button" class="multi-btn" aria-haspopup="true" aria-expanded="false"><span class="multi-val">Select</span></button>
+          <div class="multi-menu glass" role="group" aria-label="Order requested via" hidden></div>
+        </div>
+        </div>
+        <div class="field"><label>Requested dates for delivery</label><input data-k="dates" placeholder="e.g. Mon Sep 21"></div>
+        <div class="field"><label>Sale / Promotion</label><input data-k="promo" placeholder="n/a"></div>
+        <div class="field"><label>Discount code</label><input data-k="discount" placeholder="n/a"></div>
+        <div class="field"><label>Total</label><div class="money"><span>$</span><input data-k="totalPaid" class="calc" type="text" readonly placeholder="0.00" title="Adds up the Total from each order"></div></div>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="card-head"><h2>Order/s</h2><span class="count" id="itemCount">1 product</span></div>
+      <div id="items"></div>
+      <button type="button" class="btn btn-add" id="addItem">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add another product
+      </button>
+      <p class="help center">A new product copies the dates, status and shipping method from the one above.</p>
+    </div>
+
+    <div class="card glass">
+      <div class="card-head"><h2>Links</h2></div>
+      <div class="grid">
+        <div class="field span-3"><label>Request a Refill</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
+        <div class="field span-3"><label>View your dose in # of units here!</label><input data-k="doseUrl" type="url" data-default="doseGuideUrl" placeholder="https://">
+          <p class="help">Leave blank to hide this button.</p></div>
+        <div class="field span-3"><label>How to Inject (Step by Step)</label><input data-k="injectionUrl" type="url" data-default="injectionGuideUrl" placeholder="https://"></div>
+      </div>
+      <div id="extraLinks"></div>
+      <button type="button" class="btn btn-add" id="addLink" style="margin-top:16px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add another link
+      </button>
+    </div>
+
+    <div class="card glass">
+      <div class="card-head"><h2>Comments</h2></div>
+      <div class="field"><label>Comments (optional)</label><textarea data-k="comments" placeholder="Anything the patient should know about this order"></textarea></div>
+    </div>
+
+  </section>
+
+  <aside class="preview-col">
+    <div class="toolbar">
+      <button type="button" class="btn btn-primary" id="copyGmail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy for Gmail
+      </button>
+      <button type="button" class="btn" id="copyCode" title="Copy raw HTML for n8n, GHL, etc.">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+        Copy HTML
+      </button>
+      <button type="button" class="btn" id="download" title="Download .html" aria-label="Download .html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </button>
+      <button type="button" class="btn" id="reset" title="Clear form" aria-label="Clear form">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+      </button>
+    </div>
+    <div class="screen glass">
+      <div class="screen-bar">
+        <i></i><i></i><i></i><span>Email preview</span>
+        <div class="device" role="group" aria-label="Preview width">
+          <button type="button" class="on" data-w="100%">Desktop</button>
+          <button type="button" data-w="390px">Mobile</button>
+        </div>
+      </div>
+      <div class="frame-wrap"><iframe id="preview" title="Email preview"></iframe></div>
+    </div>
+  </aside>
+</main>
+
+<template id="itemTpl">
+  <div class="item">
+    <div class="item-head">
+      <div class="item-title">Order <span class="n">1</span> <span class="ph-badge" hidden></span></div>
+      <div class="item-actions">
+        <button type="button" class="icon-btn" data-act="dup" title="Duplicate product and order" aria-label="Duplicate product and order">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+        <button type="button" class="icon-btn danger" data-act="del" title="Remove product and order" aria-label="Remove product and order">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="sub-head">Order details</div>
+    <div class="grid">
+      <div class="field"><label>Order # <span class="req">*</span></label><input data-f="orderNo" placeholder="EHCNYC-0000" autocomplete="off"></div>
+      <div class="field"><label>Status of order</label><select data-f="status"></select></div>
+      <div class="field"><label>Order date</label><input data-f="orderDate" type="date"></div>
+      <div class="field"><label class="pharmacy-label">Pharmacy <span class="sub" style="color: red;">(Skip)</span></label><select data-f="pharmacy" step="0.01"></select></div>
+      <div class="field hl"><label># of shipments</label><input data-f="shipments" type="number" min="0" placeholder="e.g. 2"></div>
+      <div class="field"><label>Shipping method</label><select data-f="shipMethod"></select></div>
+      <div class="field"><label>Processing time</label><input data-f="processing"></div>
+      <div class="field"><label>Medically cleared until (Month Year)</label><input data-f="clearedUntil" type="month" placeholder="YYYY-MM"></div>
+      <div class="field"><label>Total</label><div class="money"><span>$</span><input data-f="total" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
+    </div>
+
+    <div class="sub-head first">Product</div>
+    <div class="grid">
+      <div class="field"><label>Medication / Product <span class="req">*</span></label><select data-f="med"></select></div>
+      <div class="field"><label>Form</label><select data-f="type"></select></div>
+      <div class="field"><label class="prog-label">Program (mL / mg)</label><select data-f="program"></select></div>
+      <div class="field"><label>Frequency</label><select data-f="freq"></select></div>
+      <div class="field admin-field"><label>Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous"></div>
+      <div class="field wpm-field"><label># of units available</label>
+        <div class="units-combo">
+          <input data-f="weeksPerMl" type="text" role="combobox" aria-autocomplete="none" aria-haspopup="listbox" aria-expanded="false" placeholder="Select or type units" autocomplete="off" disabled>
+          <button type="button" class="units-toggle" aria-label="Show all unit options" aria-expanded="false" tabindex="-1" disabled><svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg></button>
+          <div class="units-menu glass" role="listbox" aria-label="Units available" hidden></div>
+        </div>
+      </div>
+      <div class="field supplies-field"><label>Supplies requested</label><select data-f="supplies"></select></div>
+      <div class="field"><label>Qty shipping</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
+      <div class="field"><label>Qty owed</label><input data-f="owed" type="number" min="0" placeholder="0"></div>
+      <div class="field span-3"><label>Comments <span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="Optional"></div>
+    </div>
+
+</template>
+
+<template id="linkTpl">
+  <div class="link-row">
+    <div class="field"><label>Button text</label><input data-l="text" placeholder="e.g. Shipping FAQ"></div>
+    <div class="field"><label>Link</label><input data-l="url" type="url" placeholder="https://"></div>
+    <button type="button" class="icon-btn danger" data-act="del-link" title="Remove link" aria-label="Remove link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+  </div>
+</template>
+
+<div class="toast glass" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   CONFIG: edit products, dropdown options, links and signature
+   - pharmacy on a product (or its group) auto-fills Pharmacy
+   - pharmacy on a single program overrides it (e.g. NAD+)
+   - form auto-fills the Form field; tag shows as a pill in the email
+   ============================================================ */
+const FRIDGE = 'Keep refrigerated';
+const HOLD_STATUS = 'On hold - see comments above';
+const CONFIG = {
+  clinicName: 'Elite Health Center NYC',
+  logoData: 'data:image/png;base64,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',
+  logoUrl: '',            // hosted https logo; overrides logoData in the email when set
+  refillUrl: 'https://intakeq.com/new/h1qhys/1tx02s',
+  doseGuideUrl: 'https://canva.link/mdph0zpxi8c34mi',
+  injectionGuideUrl: 'https://drive.google.com/file/d/1nzs1cHDSPBIJfhMJLHbhCyjDbXiUL9Lw/view',
+  processingTime: 'Up to 10 business days',
+  catalog: [
+    { group: 'Weight loss', items: [
+      { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy',
+        programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '12mL-120mg'] },
+      { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy',
+        programs: ['0.5mL-2.5mg', '1mL-5mg', '3mL-15mg', '4mL-20mg'] },
+      { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
+        programs: ['1mL-10mg', '3mL-30mg', '4mL-40mg', '5mL-50mg', '6mL-60mg', '10mL-100mg', '4mL-60mg (15mg/mL)'] },
+      { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
+        programs: ['1mL-2.5mg', '2mL-5mg', '3mL-7.5mg', '3mL-15mg (5mg/mL)', '5mL-12.5mg', '10mL-25mg'] },
+      { name: 'Compounded Tirzepatide ODT', form: 'Tablets', pharmacy: 'Vios Compounding Pharmacy',
+        programs: ['3mg', '4mg', '5mg', '6mg', '7mg', '8mg', '10mg', '12mg'] },
+      { name: 'Compounded Semaglutide ODT', form: 'Tablets', pharmacy: 'Vios Compounding Pharmacy',
+        programs: ['2mg', '4mg', '6mg', '8mg', '10mg', '12mg'] }
+    ]},
+    { group: 'Peptides, supplements and other', items: [
+      { name: 'Glutathione', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '10mL (200mg/mL)', pharmacy: 'Hallandale Pharmacy' },
+        { label: '30mL (200mg/mL)', pharmacy: 'Hallandale Pharmacy' }] },
+      { name: 'NAD+', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '4mL (125mg/mL)', pharmacy: 'The Chemist Shop' },
+        { label: '10mL (100mg/mL)', pharmacy: 'Hallandale Pharmacy' },
+        { label: '10mL (200mg/mL)', pharmacy: 'Strive Pharmacy' }] },
+      { name: 'Niagen+', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '4mL 500mg (125mg/mL)', pharmacy: 'Wells Pharmacy' }] },
+      { name: 'GHK-Cu', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '5mL (10mg/mL)', pharmacy: 'Striker Pharmacy' }] },
+      { name: 'Glow: GHK-Cu, BPC-157 & TB-500', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '3mL (9mg/1.66mg/3.33mg/mL)', pharmacy: 'Striker Pharmacy' }] },
+      { name: 'Bioboost Plus', form: 'Injectable', tag: FRIDGE, programs: [
+        { label: '10mL', pharmacy: 'Hallandale Pharmacy' },
+        { label: '30mL', pharmacy: 'Hallandale Pharmacy' }] },
+      { name: 'MICB12', form: 'Gel Troches', programs: ['30 troches'] }
+    ]},
+    { group: 'Wellness & Vitality Collection', pharmacy: 'Strive Pharmacy', items: [
+      { name: 'Fuel+', form: 'Meal Replacement', programs: ['30 servings'] },
+      { name: 'Digest', form: 'Veggie Capsules', programs: ['30 ct.'] },
+      { name: 'Control', form: 'Veggie Capsules', programs: ['30 ct.'] },
+      { name: 'Regen+', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Slumber', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Restore', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Shield', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Daily', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Balance', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Boost', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Grow', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Clear Protein Hydration', form: 'Powder', programs: ['30 servings, Coconut Mojito'] },
+      { name: 'CreatinePowerline', form: 'Powder', programs: ['60 servings, Unflavored'] }
+    ]}
+  ],
+  forms: ['Injectable', 'Tablets', 'Gel Troches', 'Veggie Capsules', 'Meal Replacement', 'Powder'],
+  frequencies: ['Once a week', 'Twice a week', 'Once every 10 days', 'Once daily'],
+  supplies: ['Syringes', 'Alcohol swabs', 'Syringes + alcohol swabs', 'N/A'],
+  orderStatuses: [        // bg / text colors for the status pill in the email
+    { label: 'Processing', bg: '#e1f2f7', fg: '#1f7489' },
+    { label: HOLD_STATUS, bg: '#fdf1dc', fg: '#c62828' }
+  ],
+  requestedVia: ['Refill Form', 'Website', 'Phone', 'Text', 'Email'],
+  pharmacies: ['Hallandale Pharmacy', 'Strive Pharmacy', 'Vios Compounding Pharmacy', 'The Chemist Shop', 'Wells Pharmacy', 'Striker Pharmacy'],
+  shippingMethods: ['FedEx', 'UPS cold-pack', 'FedEx cold-pack'],
+  signatureTypes: ['No signature', 'Direct signature', 'Indirect signature'],
+  // fields a new product copies from the product above it
+  inheritFields: ['orderDate', 'status', 'processing', 'clearedUntil', 'shipMethod'],
+  signature: {
+    rating: '4.9',
+    address: ['245 Fifth Avenue Third Floor', 'New York, NY 10016'],
+    team: 'Patient Support Team',
+    hours: ['Mon-Thur: 9am to 7pm ET', 'Fri: 9am to 5pm ET'],
+    phone: '(917) 408-6103',
+    email: 'support@elitehealthcenter.com',
+    website: 'www.elitehealthcenternyc.com'
+  },
+  confidentiality: 'The information contained in this e-mail and any attachments may be legally privileged and confidential. If you are not an intended recipient, you are hereby notified that any dissemination, distribution, or copying of this e-mail is strictly prohibited. If you have received this e-mail in error, please notify the sender and permanently delete the e-mail and any attachments immediately. You should not retain, copy or use this e-mail or any attachment for any purpose, nor disclose all or any part of the contents to any other person.'
+};
+CONFIG.statusLabels = CONFIG.orderStatuses.map(s => s.label);
+
+// Flatten the catalog: one entry per product, programs normalized to {label, pharmacy}
+const PRODUCTS = CONFIG.catalog.flatMap(g => g.items.map(p => ({
+  ...p,
+  group: g.group,
+  pharmacy: p.pharmacy || g.pharmacy || '',
+  programs: p.programs.map(x => (typeof x === 'string' ? { label: x } : x))
+})));
+PRODUCTS.forEach((p, i) => { p.id = String(i); });
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nl2br = v => esc(v).replace(/\r?\n/g, '<br>');
+const safeUrl = u => (/^https?:\/\/\S+$/i.test(u || '') ? u : '');
+const parseISO = v => new Date(v + 'T00:00:00');
+const fmtDate = v => {
+  if (!v) return '';
+  const d = parseISO(v);
+  return isNaN(d) ? v : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+const fmtMonth = v => { // "2027-03" -> "Mar 2027"
+  if (!v) return '';
+  const d = new Date(v + '-01T00:00:00');
+  return isNaN(d) ? v : d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+const fmtMoney = v => {
+  if (v === '') return '';
+  const n = Number(v);
+  return isNaN(n) ? v : '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+const todayISO = () => {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+};
+const joinList = a => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+function fillSelect(sel, list, ph) {
+  sel.innerHTML = (ph !== undefined ? `<option value="">${esc(ph)}</option>` : '') +
+    list.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+}
+
+/* ---------- extra links ---------- */
+function addLink(data = {}) {
+  const node = $('#linkTpl').content.firstElementChild.cloneNode(true);
+  if (data.text) $('[data-l=text]', node).value = data.text;
+  if (data.url) $('[data-l=url]', node).value = data.url;
+  $('#extraLinks').appendChild(node);
+  return node;
+}
+$('#addLink').addEventListener('click', () => { $('[data-l=text]', addLink()).focus(); });
+$('#extraLinks').addEventListener('click', e => {
+  const b = e.target.closest('[data-act=del-link]');
+  if (!b) return;
+  b.closest('.link-row').remove();
+  render();
+});
+
+/* ---------- form setup ---------- */
+function applyDefaults() {
+  $$('[data-k]').forEach(el => { el.value = ''; });
+  $$('select[data-opts]').forEach(sel => fillSelect(sel, CONFIG[sel.dataset.opts], sel.dataset.ph));
+  $$('[data-default]').forEach(el => { el.value = CONFIG[el.dataset.default] || ''; });
+  $$('.field.invalid').forEach(f => f.classList.remove('invalid'));
+  $('#extraLinks').innerHTML = '';
+  const via = $('#viaMulti');
+  $('.multi-menu', via).innerHTML = CONFIG.requestedVia.map(v =>
+    `<label class="multi-opt"><input type="checkbox" value="${esc(v)}"><span>${esc(v)}</span></label>`).join('');
+  syncMulti(via);
+}
+
+function productOptions() {
+  return '<option value="">Select product</option>' + CONFIG.catalog.map(g =>
+    `<optgroup label="${esc(g.group)}">` +
+    PRODUCTS.filter(p => p.group === g.group).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('') +
+    '</optgroup>').join('');
+}
+
+function setValues(node, data) {
+  Object.entries(data).forEach(([k, v]) => {
+    if (k === 'med') return;
+    const el = $(`[data-f="${k}"]`, node);
+    if (!el) return;
+    if (el.classList.contains('multi')) {
+      const picked = new Set(String(v).split(', ').filter(Boolean));
+      $$('input', el).forEach(c => { c.checked = picked.has(c.value); });
+      syncMulti(el);
+    } else {
+      el.value = v;
+    }
+  });
+  syncType(node);
+  syncOrderStatus(node);
+}
+
+function addItem(data = {}) {
+  const node = $('#itemTpl').content.firstElementChild.cloneNode(true);
+  initUnitsDropdown(node);
+  $('[data-f=med]', node).innerHTML = productOptions();
+  fillSelect($('[data-f=type]', node), CONFIG.forms, 'Select');
+  fillSelect($('[data-f=freq]', node), CONFIG.frequencies, 'Select');
+  fillSelect($('[data-f=supplies]', node), CONFIG.supplies, 'Select');
+  fillSelect($('[data-f=status]', node), CONFIG.statusLabels, 'Select');
+  fillSelect($('[data-f=pharmacy]', node), CONFIG.pharmacies, 'Select');
+  fillSelect($('[data-f=shipMethod]', node), CONFIG.shippingMethods);
+  $('[data-f=orderDate]', node).value = todayISO();
+  $('[data-f=processing]', node).value = CONFIG.processingTime;
+
+  if (data.med) $('[data-f=med]', node).value = data.med;
+  syncProduct(node);
+  if (data.program) { $('[data-f=program]', node).value = data.program; syncProgram(node); }
+  setValues(node, data);
+
+  $('#items').appendChild(node);
+  renumber();
+  render();
+  return node;
+}
+
+// Each on-hold order needs its own explanation in Comments.
+function syncOrderStatus(node) {
+  const onHold = $('[data-f=status]', node).value === HOLD_STATUS;
+  const comments = $('[data-f=comments]', node), field = comments.closest('.field');
+  comments.required = onHold;
+  comments.setAttribute('aria-required', String(onHold));
+  comments.placeholder = onHold ? 'Required for on-hold orders' : 'Optional';
+  comments.setCustomValidity(onHold && !comments.value.trim() ? 'Add comments explaining why this order is on hold.' : '');
+  $('.req', field).hidden = !onHold;
+  if (!onHold || comments.value.trim()) field.classList.remove('invalid');
+}
+
+// Units available stays visible and is editable only for Injectable forms.
+function syncType(node) {
+  const injectable = $('[data-f=type]', node).value === 'Injectable';
+  node.classList.toggle('inj', injectable);
+  $('[data-f=weeksPerMl]', node).disabled = !injectable;
+  $('.units-toggle', node).disabled = !injectable;
+  if (!injectable) closeUnitsDropdown($('.units-combo', node));
+}
+
+/* ---------- editable units dropdown ---------- */
+const UNIT_AMOUNTS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1600, 3000];
+let unitsDropdownCount = 0;
+function initUnitsDropdown(node) {
+  const combo = $('.units-combo', node), input = $('input', combo), menu = $('.units-menu', combo);
+  menu.id = 'units-options-' + (++unitsDropdownCount);
+  input.id = menu.id + '-input';
+  $('label', combo.closest('.field')).htmlFor = input.id;
+  input.setAttribute('aria-controls', menu.id);
+  $('.units-toggle', combo).setAttribute('aria-controls', menu.id);
+  menu.innerHTML = UNIT_AMOUNTS.map((amount, i) => '<button type="button" class="units-option" role="option" tabindex="-1" aria-selected="false" id="' + menu.id + '-' + i + '" data-value="' + amount + ' units">' + amount + ' units</button>').join('');
+}
+function closeUnitsDropdown(combo) {
+  $('.units-menu', combo).hidden = true;
+  $('input', combo).setAttribute('aria-expanded', 'false');
+  $('input', combo).removeAttribute('aria-activedescendant');
+  $('.units-toggle', combo).setAttribute('aria-expanded', 'false');
+  combo.dataset.activeIndex = '-1';
+  combo.classList.remove('opens-up');
+  const card = combo.closest('.card');
+  if (card && !$('.units-combo input[aria-expanded="true"]', card)) card.classList.remove('units-open');
+}
+function closeUnitsDropdowns(except) {
+  $$('.units-combo').forEach(combo => { if (combo !== except) closeUnitsDropdown(combo); });
+}
+function openUnitsDropdown(combo) {
+  const input = $('input', combo), menu = $('.units-menu', combo);
+  if (input.disabled) return;
+  closeUnitsDropdowns(combo);
+  const rect = combo.getBoundingClientRect();
+  combo.classList.toggle('opens-up', window.innerHeight - rect.bottom < 250 && rect.top > 250);
+  combo.closest('.card').classList.add('units-open');
+  menu.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+  input.removeAttribute('aria-activedescendant');
+  $('.units-toggle', combo).setAttribute('aria-expanded', 'true');
+  combo.dataset.activeIndex = '-1';
+  $$('.units-option', combo).forEach(option => {
+    option.setAttribute('aria-selected', String(option.dataset.value === input.value.trim()));
+    option.classList.remove('is-active');
+  });
+  menu.scrollTop = 0;
+}
+function selectUnitsOption(combo, option) {
+  const input = $('input', combo);
+  input.value = option.dataset.value;
+  input.focus({ preventScroll: true });
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+  closeUnitsDropdown(combo);
+}
+document.addEventListener('pointerdown', e => {
+  const combo = e.target.closest('.units-combo');
+  closeUnitsDropdowns(combo);
+  if (e.target.closest('.units-option, .units-toggle')) e.preventDefault();
+});
+document.addEventListener('click', e => {
+  const combo = e.target.closest('.units-combo');
+  if (!combo) { closeUnitsDropdowns(); return; }
+  const input = $('input', combo);
+  if (input.disabled) return;
+  const option = e.target.closest('.units-option');
+  if (option) { selectUnitsOption(combo, option); return; }
+  if (e.target.closest('.units-toggle')) {
+    const open = $('.units-menu', combo).hidden;
+    input.focus({ preventScroll: true });
+    if (open) openUnitsDropdown(combo); else closeUnitsDropdown(combo);
+  } else if (e.target === input) openUnitsDropdown(combo);
+});
+document.addEventListener('input', e => {
+  const combo = e.target.closest('.units-combo');
+  if (combo && e.target === $('input', combo)) openUnitsDropdown(combo);
+});
+document.addEventListener('keydown', e => {
+  const combo = e.target.closest('.units-combo');
+  if (!combo || e.target !== $('input', combo) || e.target.disabled) return;
+  const menu = $('.units-menu', combo), options = $$('.units-option', combo);
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (menu.hidden) openUnitsDropdown(combo);
+    const current = Number(combo.dataset.activeIndex ?? -1);
+    const next = current < 0 ? (e.key === 'ArrowDown' ? 0 : options.length - 1) : (current + (e.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+    combo.dataset.activeIndex = String(next);
+    options.forEach((option, i) => option.classList.toggle('is-active', i === next));
+    e.target.setAttribute('aria-activedescendant', options[next].id);
+    options[next].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter' && !menu.hidden && Number(combo.dataset.activeIndex) >= 0) {
+    e.preventDefault();
+    selectUnitsOption(combo, options[Number(combo.dataset.activeIndex)]);
+  } else if (e.key === 'Escape' || e.key === 'Tab') {
+    if (e.key === 'Escape' && !menu.hidden) e.preventDefault();
+    closeUnitsDropdown(combo);
+  }
+});
+document.addEventListener('focusout', e => {
+  const combo = e.target.closest('.units-combo');
+  if (combo && !combo.contains(e.relatedTarget)) closeUnitsDropdown(combo);
+});
+window.addEventListener('resize', () => closeUnitsDropdowns());
+
+// Unit shown in the Program label: "mL / mg" for vials, otherwise read from the
+// program values (5mg -> mg, 30 troches -> troches, 30 ct. -> ct.). Set unit on a product to override.
+function programUnit(p) {
+  if (!p) return 'mL / mg';
+  if (p.unit) return p.unit;
+  const label = p.programs[0].label;
+  if (/mL/.test(label)) return 'mL / mg';
+  const m = label.match(/^[\d.]+\s*([A-Za-z.]+)/);
+  return m ? m[1] : 'mL / mg';
+}
+
+/* ---------- multi-select dropdown (Order requested via) ---------- */
+function syncMulti(multi) {
+  const picked = $$('input:checked', multi).map(c => c.value);
+  const val = $('.multi-val', multi);
+  val.textContent = picked.length ? picked.join(', ') : 'Select';
+  val.classList.toggle('empty', !picked.length);
+}
+function closeMenus(except) {
+  $$('.multi').forEach(m => {
+    if (m === except) return;
+    $('.multi-menu', m).hidden = true;
+    $('.multi-btn', m).setAttribute('aria-expanded', 'false');
+    const card = m.closest('.card');
+    if (card) card.classList.remove('menu-open');
+  });
+}
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.multi-btn');
+  if (btn) {
+    const multi = btn.closest('.multi'), menu = $('.multi-menu', multi);
+    const open = menu.hidden;
+    closeMenus(multi);
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    multi.closest('.card').classList.toggle('menu-open', open); // lift above the cards below
+    if (open) { const first = $('input', menu); if (first) first.focus(); }
+    return;
+  }
+  if (!e.target.closest('.multi-menu')) closeMenus();
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const open = $$('.multi').find(m => !$('.multi-menu', m).hidden);
+  if (open) { closeMenus(); $('.multi-btn', open).focus(); }
+});
+
+// Product changed: rebuild its Program list, auto-fill Form and Pharmacy
+function syncProduct(node) {
+  const p = PRODUCTS[$('[data-f=med]', node).value];
+  const prog = $('[data-f=program]', node);
+  if (p) {
+    fillSelect(prog, p.programs.map(x => x.label), p.programs.length > 1 ? 'Select' : undefined);
+    prog.disabled = false;
+  } else {
+    prog.innerHTML = '<option value="">Pick a product first</option>';
+    prog.disabled = true;
+  }
+  $('.prog-label', node).textContent = `Program (${programUnit(p)})`;
+  $('[data-f=type]', node).value = p ? p.form : '';
+  syncType(node);
+  const shared = p ? [...new Set(p.programs.map(x => x.pharmacy).filter(Boolean))] : [];
+  $('[data-f=pharmacy]', node).value = p ? (p.pharmacy || (shared.length === 1 ? shared[0] : '')) : '';
+  if (p && p.programs.length === 1) syncProgram(node);
+}
+
+// Program changed: some programs (e.g. NAD+) ship from a specific pharmacy
+function syncProgram(node) {
+  const p = PRODUCTS[$('[data-f=med]', node).value];
+  const label = $('[data-f=program]', node).value;
+  const pr = p && p.programs.find(x => x.label === label);
+  if (pr && pr.pharmacy) $('[data-f=pharmacy]', node).value = pr.pharmacy;
+}
+
+function renumber() {
+  const items = $$('#items .item');
+  items.forEach((n, i) => { $('.n', n).textContent = i + 1; });
+  $('#itemCount').textContent = `${items.length} product${items.length === 1 ? '' : 's'}`;
+}
+
+function readItem(node) {
+  const o = {};
+  $$('[data-f]', node).forEach(el => {
+    o[el.dataset.f] = el.classList.contains('multi')
+      ? $$('input:checked', el).map(c => c.value).join(', ')
+      : el.value.trim();
+  });
+  return o;
+}
+
+// Total paid = sum of each order's Total; blank until at least one Total is entered
+function calcTotalPaid(items) {
+  const vals = items.map(i => i.total).filter(v => v !== '' && !isNaN(Number(v)));
+  if (!vals.length) return '';
+  return (vals.reduce((sum, v) => sum + Math.round(Number(v) * 100), 0) / 100).toFixed(2);
+}
+
+function readState() {
+  const s = {};
+  $$('[data-k]').forEach(el => { s[el.dataset.k] = el.value.trim(); });
+  s.via = $$('#viaMulti input:checked').map(c => c.value).join(', ');
+  s.links = $$('#extraLinks .link-row').map(r => ({
+    text: $('[data-l=text]', r).value.trim(),
+    url: $('[data-l=url]', r).value.trim()
+  })).filter(l => l.text && safeUrl(l.url));
+  s.items = $$('#items .item').map(n => {
+    const o = readItem(n);
+    const p = PRODUCTS[o.med];
+    o.name = p ? p.name : '';
+    o.tag = (p && p.tag) || '';
+    return o;
+  }).filter(o => o.name);
+  s.totalPaid = calcTotalPaid(s.items);
+  return s;
+}
+
+/* ============================================================
+   EMAIL TEMPLATE (Gmail-safe: tables + inline styles only)
+   ============================================================ */
+const F = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+const C = {
+  navy: '#092e39', blue: '#8bcbdd', accent: '#2a8ea8', accentDark: '#1f7489', pill: '#e1f2f7',
+  ink: '#12303a', muted: '#5d7682', line: '#dcecf1', panel: '#f3f9fb', stat: '#eef7fa',
+  page: '#e3f0f5', card: '#fbfdfe', hl: '#dff1f6', hlLine: '#b9e1ec', danger: '#c62828'
+};
+
+function heading(text, right = '') {
+  return `<tr><td style="padding:28px 30px 10px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td width="4" style="width:4px;background-color:${C.blue};border-radius:2px;font-size:0;line-height:0;">&nbsp;</td>
+<td style="padding-left:10px;font-family:${F};font-size:16px;line-height:20px;font-weight:700;color:${C.navy};">${esc(text)}</td>
+${right ? `<td align="right" style="padding-left:10px;font-family:${F};font-size:13px;line-height:20px;font-weight:700;color:${C.muted};white-space:nowrap;">${esc(right)}</td>` : ''}
+</tr></table></td></tr>`;
+}
+
+function miniLabel(text) {
+  return `<tr><td style="padding:16px 30px 8px;font-family:${F};font-size:13px;line-height:18px;font-weight:700;color:${C.muted};">${esc(text)}</td></tr>`;
+}
+
+const spacer = h => `<tr><td style="height:${h}px;font-size:0;line-height:${h}px;">&nbsp;</td></tr>`;
+
+function panel(innerRows) {
+  return `<tr><td style="padding:0 30px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:${C.panel};border:1px solid ${C.line};border-radius:14px;box-shadow:inset 0 1px 0 #ffffff,0 4px 14px rgba(9,46,57,0.05);">${innerRows}</table>
+</td></tr>`;
+}
+
+function kvPanel(rows) {
+  const list = rows.filter(r => r[1] !== '' && r[1] != null);
+  if (!list.length) return '';
+  return panel(list.map(([k, v, raw], i) => {
+    const top = i ? `border-top:1px solid ${C.line};` : '';
+    return `<tr>
+<td width="42%" valign="top" style="padding:11px 16px;${top}font-family:${F};font-size:13px;line-height:19px;color:${C.muted};">${esc(k)}</td>
+<td valign="top" style="padding:11px 16px;${top}font-family:${F};font-size:14px;line-height:20px;font-weight:600;color:${C.ink};">${raw ? v : esc(v)}</td>
+</tr>`;
+  }).join(''));
+}
+
+function pill(text, bg, fg, border) {
+  return `<span style="display:inline-block;margin:6px 6px 0 0;padding:3px 10px;border-radius:999px;background-color:${bg};border:1px solid ${border};font-family:${F};font-size:11px;line-height:16px;font-weight:700;color:${fg};">${text}</span>`;
+}
+
+function statusPill(label) {
+  if (!label) return '';
+  const st = CONFIG.orderStatuses.find(x => x.label === label) || { bg: C.pill, fg: C.accentDark };
+  return `<span style="display:inline-block;white-space:nowrap;padding:2px 10px;border-radius:999px;background-color:${st.bg};font-family:${F};font-size:13px;line-height:19px;font-weight:700;color:${st.fg};">${esc(label)}</span>`;
+}
+
+function stat(label, value) {
+  return `<td width="33%" valign="top" style="background-color:${C.stat};border:1px solid ${C.line};border-radius:10px;padding:9px 10px;">
+<div style="font-family:${F};font-size:11px;line-height:14px;font-weight:600;color:${C.muted};">${esc(label)}</div>
+<div style="font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.ink};padding-top:2px;">${esc(value || '-')}</div>
+</td>`;
+}
+
+function noteLine(label, text, alert = false) {
+  return text
+    ? `<tr><td style="padding:0 16px 10px;font-family:${F};font-size:13px;line-height:19px;color:${alert ? C.danger : C.muted};"><span style="font-weight:700;color:${C.navy};">${esc(label)}:</span> ${esc(text)}</td></tr>`
+    : '';
+}
+
+function itemCard(it) {
+  const inj = it.type === 'Injectable';
+  const stats = [
+    ['Program', (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
+    ['Frequency', it.freq],
+    ['Units available', inj ? it.weeksPerMl : ''],
+    ['Supplies requested', it.supplies],
+    ['Qty shipping', it.ship || '-'],
+    ['Qty owed', it.owed || '0']
+  ].filter(([, v]) => v !== '');
+  let rows = '';
+  for (let i = 0; i < stats.length; i += 3) {
+    const chunk = stats.slice(i, i + 3);
+    let cells = chunk.map(([l, v]) => stat(l, v)).join('');
+    for (let j = chunk.length; j < 3; j++) cells += '<td width="33%" style="font-size:0;line-height:0;">&nbsp;</td>';
+    rows += `<tr>${cells}</tr>`;
+  }
+  const pills = [
+    it.type ? pill(esc(it.type), '#e9f0f3', C.navy, '#d3e0e5') : '',
+    it.tag ? pill(`&#10052; ${esc(it.tag)}`, C.pill, C.accentDark, '#cde8f0') : ''
+  ].join('');
+  const notes = noteLine('Administration', it.admin) + noteLine('Comments', it.comments, it.status === HOLD_STATUS);
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-left:4px solid ${C.blue};border-radius:14px;margin:0 0 10px 0;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
+<tr><td style="padding:14px 16px 6px;">
+<div style="font-family:${F};font-size:15px;line-height:21px;font-weight:700;color:${C.navy};">${esc(it.name)}</div>${pills ? `<div>${pills}</div>` : ''}
+</td></tr>
+<tr><td style="padding:2px 10px ${notes ? 4 : 10}px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="6" border="0" style="border-collapse:separate;">${rows}</table></td></tr>
+${notes}${notes ? spacer(4) : ''}
+</table>`;
+}
+
+function shipmentsBar(value) {
+  if (value === '') return '';
+  return `<tr><td style="padding:0 30px 10px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.hl}" style="border-collapse:separate;background-color:${C.hl};border:1px solid ${C.hlLine};border-radius:14px;box-shadow:inset 0 1px 0 #ffffff;">
+<tr>
+<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">Number of shipments</td>
+<td align="right" style="padding:14px 20px;font-family:${F};font-size:22px;line-height:26px;font-weight:800;color:${C.navy};">${esc(value)}</td>
+</tr></table></td></tr>`;
+}
+
+// strong = navy bar (Total paid); otherwise a light bar (per-order total)
+function totalBar(amount, label, strong) {
+  if (amount === '') return '';
+  const box = strong
+    ? `bgcolor="${C.navy}" style="border-collapse:separate;background-color:${C.navy};border:1px solid #21505c;border-radius:12px;box-shadow:0 2px 6px rgba(9,46,57,0.08);"`
+    : `bgcolor="#ffffff" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-radius:14px;"`;
+  return `<tr><td style="padding:0 30px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ${box}>
+<tr>
+<td${strong ? ' valign="middle"' : ''} style="padding:${strong ? 16 : 14}px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:600;color:${strong ? '#d9edf2' : C.muted};">${esc(label)}</td>
+<td align="right"${strong ? ' valign="middle"' : ''} style="padding:${strong ? 16 : 14}px 20px;font-family:${F};font-size:${strong ? 24 : 20}px;line-height:${strong ? 30 : 28}px;font-weight:${strong ? 700 : 800};color:${strong ? '#ffffff' : C.navy};${strong ? 'white-space:nowrap;font-variant-numeric:tabular-nums;' : ''}">${esc(amount)}</td>
+</tr></table></td></tr>`;
+}
+
+function orderSection(it, i, n) {
+  const carrier = /^fedex/i.test(it.shipMethod) ? 'FedEx' : 'UPS';
+  const title = it.orderNo ? `Order #${it.orderNo}` : (n > 1 ? `Order ${i + 1}` : 'Your order');
+  const divider = i > 0
+    ? `<tr><td style="padding:30px 30px 0;"><div style="border-top:2px dashed #cfe3ea;font-size:0;line-height:0;">&nbsp;</div></td></tr>`
+    : '';
+  return `${divider}
+${heading(title, n > 1 ? `${i + 1} of ${n}` : '')}
+<tr><td style="padding:0 30px;">${itemCard(it)}</td></tr>
+${shipmentsBar(it.shipments)}
+${totalBar(fmtMoney(it.total), 'Order total', false)}
+${miniLabel('Order details')}
+${kvPanel([
+  ['Status of order', statusPill(it.status), true],
+  ['Order date', fmtDate(it.orderDate)],
+  ['Processing time', it.processing],
+  ['Medically cleared until', fmtMonth(it.clearedUntil)]
+])}
+${miniLabel('Shipping')}
+${kvPanel([
+  ['Pharmacy', it.pharmacy],
+  ['Shipping method', it.shipMethod],
+  ['Tracking your order', `<span style="font-weight:400;color:${C.muted};">A ${carrier} tracking # will be emailed and/or texted to you once fulfillment has completed.</span>`, true]
+])}`;
+}
+
+function button(url, text, primary) {
+  const bg = primary ? C.blue : '#ffffff';
+  const style = primary
+    ? `background-color:${bg};background-image:linear-gradient(135deg,#a9dae8 0%,${C.blue} 100%);border:1px solid ${C.hlLine};box-shadow:0 8px 20px rgba(42,142,168,0.25);`
+    : `background-color:${bg};border:1.5px solid ${C.blue};`;
+  return `<tr><td align="center" style="padding:0 30px 12px;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td align="center" bgcolor="${bg}" style="${style}border-radius:12px;">
+<a href="${esc(url)}" target="_blank" style="display:inline-block;min-width:220px;padding:14px 26px;font-family:${F};font-size:15px;line-height:20px;font-weight:700;color:${C.navy};text-decoration:none;text-align:center;border-radius:12px;">${esc(text)}</a>
+</td></tr></table></td></tr>`;
+}
+
+function treatmentNotice() {
+  const reminders = [
+    'You are taking a new medication',
+    'You have a new medical condition',
+    'If you have a new allergy',
+    'If you plan on having a procedure or surgery',
+    '(Females) If you plan on getting pregnant',
+    'If you experience any side effects.'
+  ];
+  return spacer(20) + panel(`<tr><td style="padding:16px;font-family:${F};font-size:14px;line-height:21px;color:${C.ink};">
+<p style="margin:0;"><strong style="color:${C.danger};font-weight:700;">Important!</strong> During your treatment, please let us know if you:</p>
+<ul style="margin:10px 0 0;padding:0 0 0 20px;">${reminders.map((text, i) => `<li style="margin:0 0 ${i === reminders.length - 1 ? 0 : 6}px;padding:0;">${esc(text)}</li>`).join('')}</ul>
+</td></tr>`);
+}
+
+function signatureBlock(logoSrc) {
+  const S = CONFIG.signature;
+  const txt = (size, extra) => `font-family:${F};font-size:${size}px;line-height:${Math.round(size * 1.45)}px;${extra}`;
+  const a = (href, text, underline) => `<a href="${esc(href)}" target="_blank" style="color:${C.navy};text-decoration:${underline ? 'underline' : 'none'};">${esc(text)}</a>`;
+  const left = `<div style="width:100%;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:8px 10px;">
+<img src="${esc(logoSrc)}" alt="EHCNYC Elite Health Center NYC" width="170" style="display:block;margin:0 auto;width:170px;max-width:170px;height:auto;border:0;outline:none;">
+<div style="${txt(13, 'font-weight:700;color:#3b4b52;padding-top:8px;')}">${esc(S.rating)} <span style="font-size:15px;letter-spacing:1px;color:#f5b301;">&#9733;&#9733;&#9733;&#9733;&#9733;</span></div>
+<div style="${txt(13, `font-style:italic;color:#3b4b52;padding-top:10px;`)}">${S.address.map(esc).join('<br>')}</div>
+</td></tr></table>
+</div>`;
+  const line = content => `<div style="${txt(14, `color:${C.ink};padding-top:9px;`)}">${content}</div>`;
+  const right = `<div style="width:100%;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:14px 10px 8px;text-align:center;">
+<div style="${txt(17, `font-weight:800;color:${C.navy};`)}">${esc(S.team)}</div>
+${S.hours.map(h => line(esc(h))).join('')}
+${line(`Phone/Text: ${a('tel:+1' + S.phone.replace(/\D/g, ''), S.phone, false)}`)}
+${line(a('mailto:' + S.email, S.email, true))}
+${line(a('https://' + S.website, S.website, true))}
+</td></tr></table>
+</div>`;
+  return `<tr><td style="padding:30px 30px 0;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#ffffff" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-radius:16px;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
+<tr><td align="center" style="padding:18px 12px;text-align:center;">${left}${right}</td></tr>
+</table></td></tr>
+<tr><td style="padding:14px 30px 0;font-family:${F};font-size:10.5px;line-height:15px;color:#7b8f98;text-align:left;">
+<span style="font-weight:700;color:${C.muted};">CONFIDENTIALITY NOTICE:</span> ${esc(CONFIG.confidentiality)}
+</td></tr>`;
+}
+
+function buildEmailBody(s) {
+  const n = s.items.length;
+  const lead = s.items[0] || {};
+  const logoSrc = safeUrl(CONFIG.logoUrl) || CONFIG.logoData;
+  const logo = `<img src="${esc(logoSrc)}" alt="EHCNYC Elite Health Center NYC" width="140" style="display:block;width:140px;max-width:140px;height:auto;border:0;outline:none;text-decoration:none;">`;
+
+  const patient = kvPanel([
+    ['Name', s.name],
+    ['Order requested via', s.via],
+    ['Shipping address', s.address ? nl2br(s.address) : '', true],
+    ['Signature at delivery', s.signature],
+    ['Instructions for courier', s.courier || 'n/a'],
+    ['Requested dates for delivery', s.dates],
+    ['Sale / promotion', s.promo || 'n/a'],
+    ['Discount code', s.discount || 'n/a']
+  ]);
+  const paid = s.totalPaid !== '' ? spacer(12) + totalBar(fmtMoney(s.totalPaid), 'Total', true) : '';
+
+  const orders = n
+    ? s.items.map((it, i) => orderSection(it, i, n)).join('')
+    : `${heading('Your order')}<tr><td style="padding:0 30px;font-family:${F};font-size:14px;color:${C.muted};">No products added yet.</td></tr>`;
+
+  const comments = s.comments
+    ? heading('Comments') + panel(`<tr><td style="padding:14px 16px;font-family:${F};font-size:14px;line-height:21px;color:${C.ink};">${nl2br(s.comments)}</td></tr>`)
+    : '';
+
+  const buttons = [
+    safeUrl(s.refillUrl) ? button(s.refillUrl, 'Request a Refill', true) : '',
+    safeUrl(s.doseUrl) ? button(s.doseUrl, 'View your dose in # of units here!', false) : '',
+    safeUrl(s.injectionUrl) ? button(s.injectionUrl, 'How to Inject (Step by Step)', false) : '',
+    ...s.links.map(l => button(l.url, l.text, false))
+  ].join('');
+  const links = buttons ? spacer(28) + buttons : '';
+
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.page}" style="background-color:${C.page};background-image:linear-gradient(160deg,#d3eaf2 0%,#eef6f9 45%,#d8e9ef 100%);">
+<tr><td align="center" style="padding:28px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;border-collapse:separate;background-color:${C.card};border:1px solid #ffffff;border-radius:20px;box-shadow:0 0 0 1px #cfe3ea,0 16px 40px rgba(9,46,57,0.12);">
+
+<tr><td bgcolor="#eef7fa" style="background-color:#eef7fa;background-image:linear-gradient(135deg,#ffffff 0%,#e2f2f7 100%);padding:24px 26px;border-radius:19px 19px 0 0;border-bottom:1px solid ${C.line};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td valign="middle">${logo}</td>
+<td align="right" valign="middle" style="padding-left:12px;">
+<div style="font-family:${F};font-size:20px;line-height:24px;font-weight:800;color:${C.navy};">Order Confirmation</div>
+<div style="font-family:${F};font-size:15px;line-height:21px;font-weight:700;color:${C.accent};padding-top:4px;">${esc(fmtDate(lead.orderDate))}</div>
+</td>
+</tr></table>
+</td></tr>
+
+<tr><td style="padding:26px 30px 0;font-family:${F};">
+<div style="font-size:18px;line-height:24px;font-weight:700;color:${C.ink};">Hi there,</div>
+<div style="font-size:15px;line-height:23px;color:${C.muted};padding-top:6px;">Thank you for choosing ${esc(CONFIG.clinicName)}!</div>
+</td></tr>
+
+${heading('Patient information')}
+${patient}
+${paid}
+
+${orders}
+${treatmentNotice()}
+${comments}
+${links}
+${signatureBlock(logoSrc)}
+
+<tr><td style="padding:22px 30px 0;"><div style="border-top:1px solid ${C.line};font-size:0;line-height:0;">&nbsp;</div></td></tr>
+<tr><td align="center" style="padding:16px 30px 28px;font-family:${F};font-size:12px;line-height:19px;color:${C.muted};">
+Questions about your order? Just reply to this email.<br>
+<span style="font-weight:700;color:${C.navy};">${esc(CONFIG.clinicName)}</span>
+</td></tr>
+
+</table>
+</td></tr>
+</table>`;
+}
+
+function buildEmailDoc(s) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>Order Confirmation | ${esc(CONFIG.clinicName)}</title>
+</head>
+<body style="margin:0;padding:0;background-color:${C.page};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your order confirmation from ${esc(CONFIG.clinicName)}.</div>
+${buildEmailBody(s)}
+</body>
+</html>`;
+}
+
+/* ---------- preview ---------- */
+const frame = $('#preview');
+let frameReady = false, raf = 0;
+frame.addEventListener('load', () => { frameReady = true; render(); });
+frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:${C.page};"></body></html>`;
+
+function render() {
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => {
+    $$('#items .item').forEach(n => {
+      const badge = $('.ph-badge', n), ph = $('[data-f=pharmacy]', n).value;
+      badge.textContent = ph; badge.hidden = !ph;
+    });
+    const s = readState();
+    $('[data-k=totalPaid]').value = s.totalPaid;
+    const nums = $$('#items [data-f=orderNo]').map(el => el.value.trim()).filter(Boolean);
+    $('#chipOrder').textContent = nums.length > 1 ? `${nums.length} orders` : nums.length ? `Order #${nums[0]}` : 'New order';
+    if (!frameReady) return;
+    try { frame.contentDocument.body.innerHTML = buildEmailBody(s); }
+    catch { frame.srcdoc = buildEmailDoc(s); }
+  });
+}
+
+/* ---------- validation / copy / download ---------- */
+function missingHoldComments() {
+  const items = $$('#items .item');
+  return items.flatMap((node, i) => {
+    const input = $('[data-f=comments]', node);
+    return $('[data-f=status]', node).value === HOLD_STATUS && !input.value.trim()
+      ? [{ input, label: 'comments for on-hold order' + (items.length > 1 ? ' ' + (i + 1) : '') }]
+      : [];
+  });
+}
+function requireHoldComments(action) {
+  const missing = missingHoldComments();
+  if (!missing.length) return true;
+  missing.forEach(({ input }) => input.closest('.field').classList.add('invalid'));
+  toast('Add ' + joinList(missing.map(item => item.label)) + ' before ' + action, true);
+  missing[0].input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  missing[0].input.focus({ preventScroll: true });
+  return false;
+}
+
+function validate() {
+  $$('.field.invalid').forEach(f => f.classList.remove('invalid'));
+  const miss = [];
+  const flag = (el, label) => { el.closest('.field').classList.add('invalid'); if (!miss.includes(label)) miss.push(label); };
+  const name = $('[data-k=name]');
+  if (!name.value.trim()) flag(name, 'Name');
+  const items = $$('#items .item');
+  items.forEach((node, i) => {
+    const which = items.length > 1 ? ` in order ${i + 1}` : '';
+    const med = $('[data-f=med]', node), order = $('[data-f=orderNo]', node);
+    if (!med.value) flag(med, 'product' + which);
+    if (!order.value.trim()) flag(order, 'order #' + which);
+  });
+  missingHoldComments().forEach(({ input, label }) => flag(input, label));
+  $$('#extraLinks .link-row').forEach(r => {
+    const t = $('[data-l=text]', r), u = $('[data-l=url]', r);
+    if (!t.value.trim() && !u.value.trim()) return;
+    if (!t.value.trim()) flag(t, 'button text for each extra link');
+    if (!safeUrl(u.value.trim())) flag(u, 'full https link for each extra button');
+  });
+  return miss;
+}
+
+function toPlain(html) {
+  const d = new DOMParser().parseFromString(html, 'text/html');
+  return d.body.textContent.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+async function copyRich(html) {
+  try {
+    if (!window.ClipboardItem || !navigator.clipboard || !navigator.clipboard.write) throw new Error('no api');
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([toPlain(html)], { type: 'text/plain' })
+    })]);
+    return true;
+  } catch {
+    const box = document.createElement('div');
+    box.style.cssText = 'all:initial;position:fixed;left:-10000px;top:0;';
+    box.innerHTML = html;
+    document.body.appendChild(box);
+    const sel = getSelection(), range = document.createRange();
+    range.selectNodeContents(box);
+    sel.removeAllRanges(); sel.addRange(range);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch {}
+    sel.removeAllRanges(); box.remove();
+    return ok;
+  }
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;left:-10000px;top:0;';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch {}
+    ta.remove();
+    return ok;
+  }
+}
+
+let toastTimer;
+function toast(msg, bad = false) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.toggle('bad', bad);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3600);
+}
+
+$('#copyGmail').addEventListener('click', async () => {
+  const miss = validate();
+  if (miss.length) {
+    toast('Add the ' + joinList(miss) + ' before copying', true);
+    const f = $('.field.invalid');
+    if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const ok = await copyRich(buildEmailBody(readState()));
+  toast(ok ? 'Copied. Open Gmail, click Compose, and paste.' : 'Copy was blocked. Click inside the preview, press Ctrl+A, then Ctrl+C.', !ok);
+});
+
+$('#copyCode').addEventListener('click', async () => {
+  if (!requireHoldComments('copying')) return;
+  const ok = await copyText(buildEmailDoc(readState()));
+  toast(ok ? 'HTML code copied' : 'Copy was blocked. Use the download button instead.', !ok);
+});
+
+$('#download').addEventListener('click', () => {
+  if (!requireHoldComments('downloading')) return;
+  const s = readState();
+  const name = s.items.map(i => i.orderNo).filter(Boolean).join('_') || 'draft';
+  const blob = new Blob([buildEmailDoc(s)], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `order-confirmation-${name.replace(/[^\w-]+/g, '_')}.html`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  toast('Downloaded');
+});
+
+$('#reset').addEventListener('click', () => {
+  if (!confirm('Clear the form and start a new order?')) return;
+  applyDefaults();
+  $('#items').innerHTML = '';
+  addItem();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('Form cleared');
+});
+
+$$('.device button').forEach(b => b.addEventListener('click', () => {
+  $$('.device button').forEach(x => x.classList.toggle('on', x === b));
+  frame.style.width = b.dataset.w;
+}));
+
+/* ---------- product events ---------- */
+$('#addItem').addEventListener('click', () => {
+  const items = $$('#items .item');
+  const prev = items.length ? readItem(items[items.length - 1]) : {};
+  const carry = {};
+  CONFIG.inheritFields.forEach(k => { if (prev[k] !== undefined) carry[k] = prev[k]; });
+  const n = addItem(carry);
+  n.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  $('[data-f=med]', n).focus({ preventScroll: true });
+});
+
+$('#items').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const item = btn.closest('.item');
+  if (btn.dataset.act === 'dup') {
+    const copy = addItem(readItem(item));
+    item.after(copy);
+  } else if (btn.dataset.act === 'del') {
+    const only = $$('#items .item').length === 1;
+    item.remove();
+    if (only) addItem();
+  }
+  renumber();
+  render();
+});
+
+/* ---------- live updates ---------- */
+const formCol = $('.form-col');
+formCol.addEventListener('input', e => {
+  const f = e.target.closest('.field');
+  if (f) f.classList.remove('invalid');
+  if (e.target.dataset.f === 'comments') syncOrderStatus(e.target.closest('.item'));
+  render();
+});
+formCol.addEventListener('change', e => {
+  const node = e.target.closest('.item');
+  if (e.target.dataset.f === 'med') syncProduct(node);
+  if (e.target.dataset.f === 'program') syncProgram(node);
+  if (e.target.dataset.f === 'type') syncType(node);
+  if (e.target.dataset.f === 'status' || e.target.dataset.f === 'comments') syncOrderStatus(node);
+  const multi = e.target.closest('.multi');
+  if (multi) syncMulti(multi);
+  render();
+});
+
+/* ---------- init ---------- */
+$('.brand-logo').src = CONFIG.logoData;
+applyDefaults();
+addItem();
+</script>
+</body>
+</html>
