@@ -141,6 +141,7 @@ button{font:inherit}
 .sub-head.first{margin-top:4px;padding-top:0;border-top:0}
 /* Keep supplies on the third row of the product grid. */
 .item .supplies-field{grid-column:1}
+.field[hidden]{display:none}
 /* Editable units dropdown: always show the full list. */
 .card.units-open{position:relative;z-index:7}
 .units-combo{position:relative}
@@ -314,9 +315,11 @@ button{font:inherit}
         </div>
       </div>
       <div class="field supplies-field"><label>Supplies requested</label><select data-f="supplies"></select></div>
-      <div class="field"><label>Qty shipping</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
-      <div class="field"><label>Qty owed</label><input data-f="owed" type="number" min="0" placeholder="0"></div>
-      <div class="field span-3"><label>Comments <span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="Optional"></div>
+      <div class="field"><label>Medication Owed?</label><select data-f="medOwed"></select></div>
+      <!--<div class="field"><label>Vials (mL) being shipped</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
+      <div class="field"><label>#mLs OWED</label><input data-f="owed" type="number" min="0" placeholder="0"></div>-->
+      <div class="field span-3"><label>Comments<span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="N/A"></div>
+      <div class="field span-3 owed-field" hidden><label style="color: purple;">Owed Medication</label><input data-f="owedMed" placeholder="Describe the medication owed"></div>
     </div>
 
 </template>
@@ -344,6 +347,7 @@ const FRIDGE = 'Keep refrigerated';
 const HOLD_STATUS = 'On hold - see comments above';
 const CONFIG = {
   clinicName: 'Elite Health Center NYC',
+  tagline: "New York's Premier Online Weight Loss Clinic",
   logoData: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAABaCAMAAACi/jz1AAAAwFBMVEUAbNkAqvAAkLYASCQAbbYAqlUA/wAAAAAAJjEAjLMAJy4AJTEAJjEAJTEAAFUAJTEAJjAAi7MA//8ANzcAi7QAJTEAf38Aia8AqqoAjLMAHTkAf7QAHh4AAP8Af/8AkrUAVVUAAH8AADsAVaoAl8wAmZkAkbcAHy8AVQAAfwAAf50AKUYAPQ4AjMQAv78AZpkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSiv+AAAAMHRSTlMFBFEHBwMBAPZzD9EvrQORUU4BBTJxAhQDgQoGCAECEQMCBAMJBSgiAwIKCQYOBAX/xjKNAAAPJklEQVR42u2dh5bjqBJAvfsCMkEgIWSNsztN3Nn//7tHUKaQUNs97tnXnN05bQkRrspFURR4lS5JyKYH6CKYztE5USqU4pwRQhhjXFEcyHfIy7yXyjxY4mGQMS/1peGzJk20yMs8qivPX4oiy7L1eq3/zYrNLj8MMlChk6RU/4nFiixICUcY7XkyvChCLcWjnIQGMm6x4CQZJcaEDztHxXqYsgKVMKdxzgJ5D+vHN6HWrzIvc4GOzd1dVfj3dWNO3cuQnCWESZLobrBklSxJTIOWfHQxDJqNcoKgsVQkVJ+icg70er2BSZcjEJ/MG4HggVINVZShyt08Pvs3uzd37LpmRMtIokzuDxqryRo5TWf7X6FI0Du08cnsDiDo0xp4J/aNlruX9VTKNuUANGNGtu8MegazlWo8A1pLWiToqgIeB0X6CMh+LdCnYj2Xil2tPCxoRWgi7gv6QZCISvuqHQQNKw8I9AFVGfC0P44Cop+5SjbrmORQW9CJUgnHdwUdIc6OtNhOg852kRKtWQEE8+P42eoIvI9Sg94V67hUVOiCJDMSLX4QcVfQ3u0I9QGDBpUHCFr/FzEelqGRcJetY5MZOaQxUsUPJIx5dy/QaZTaaMfE7STodeFbxDDoMgdE+mk0HuY7v4Zv2hA/rRekYvg1uxPoFIlFFSdqPwlaK9o8CrQe5oqQOTEl0C95FameA6TvJdGULANd1xIEna3iJNoUAY2Hh7mRsFqiN9oZ0t1BL9DPA9sjCHpdlJGgyxLgeOyNh487aCT0yotQ05vD4ZWg+Y1Ay8WcNWk8CdpTHiHQ6HHamC7B2+gp+7RenDZ3luiUJ69ISk6CHtt4QdDQTDx7akHnT/5ddCyLV3Duf81Wvi9nIikkbwBahgZCwrhSyrjwQiI9AVpbHpGg8+MpPB5CAr0pgwOhcdu9GB8erFhOrfJfTUzD4HQ9aAxzZK21jCmHsnA8CXo4pE2ABifYp7L2wp6AkfCAYI5Z0SiHzQZE3TkHfdD77T6UtvImoCGBJty6bTGW+n9jlUCoqe7xBOjsFCfRxi+U+SJdOQXu83qGxs+GYlU9Hh8r8+ymAEU6LNHpG0s0JNBEF7LvXKIpBgxAI/HlFOihPTUFOgdUwcnJ+gka0Z4Dtf1xzNv1CF34JvMk/uf9QKcCtN3wsNoHjCgbY57W0SMbbwo0NBPPTlrxVDtgJMzzgCdrtOLyOCD9SWP+d9jqeHvQgEAzih6A53ukuakEz4JeP0WCRscNNB6W6AVQHOBUZYOOwGpBa7FozC87o4nuB5r68ixBzg9NVmIwS4nmJXqd/RUJGlD22bcyP2WQOtqt52btrQ1+6lbY0OF4uKNEpwqYXT/ANWHeYMZy2qnUAWg7Nw0a5ReIaQFZHGURyRkdyqeiwVwdJ51KhAZ6bT1BMGgMpj0GQfuaQ30/B9bQdWaiaCPNUaA75TEDGkHDni/Qp6Nf0vpTVgVW33Ojpo3Ndxwrlre0oxEIGjDaZLAEOsAcA7qdIM6CBsQXVByAhQIp6CZtTkay/UV1z87CNJjwHgLNeCgRH/QX5Tv1z5PxHrOLswEbbxZ0jmbdRJk13wpPoHdhzgcTEAJFL/gTNBKagBOGtfqQr3JUNKC3zP8KTYBOz/NRAAFPzrxEzzvybVGXYiK+A9AesFJZLXSgXQv6O1usq2ZAZ4Hl/gjQc2/NrZD9J5tfZZhPvxq0Nxbyac0xH6m0CSiPCNCANQdM6T0rGlwLfnegfdtOXgcach+XkRI9vTpV66CnSNvunw4a8B+v/4gFPTUeZiFNPqmi3wtouniCNCvR0BLfLhJ0vplfHtn9lhItrhoLQdDPFbj2FCfR4fGwaKaYT5FRle8bNLse9Apy+vwdCzq0tp09Bl/FbwH6DVRHmYPKo4oDHTKm25BQSEf/Xw6GutdHUHlEgoaVR28NYfcBugvyfAYWAWNBQ8qjvyq2+y2tjq3n6rhaR5d9P3B4yhgEDRnT/bnfbnLF7PeZGcobgEZlOesDCYMGpvWXfgxv5q8uHK4HPRXWwTHkvTOxGHAiEU4lRm8BGtyeEg365C/U5hOgb+LrIBSHk4T90eezBBKWW8Afjbkv5ukNQINqOhb0ZpLkobiF7nhLx/93yPEvgLCYW4Au51xxrwYNrS4u1x2/fM1wmywQ6TMVaaxEV3n2RqC/reNF+oA2xeFdgPYDdidEWmfmFMeBRuiP7G1A+0o62wW09MGsGWabv98BaKkCMeZQUm64lFGgZ5TH60HDcbyTFszL/UEDq7OBErrtF0RESfTjJOkrQO/WkaTzzoAZK5A7gGZQpBK4BN5fM07nQaP8MXsb0H8CkTo5pDj609HhHoQ7BDnS6T2bEGeTJRB71wc9qTyuAA0uxBTzBRXPdwUN7V8hYjxBxN72OIN6GvQk6WtA/8zgPZuzqwjF6lfY0aH4aAru2hhYFxjcTUQBkgPQYHjzDUCjQHx0f5W2AnfVFhMBNNvw1HB/m4h/2FvChZmVpul2C2M2duAcaC1W2VuA3gUj/ndVlee7591fWWj/bCiAZiqp22wWokGvFedKMRb2SeVzoOFY5qtBTyyXZ1lRZH/ObhW7y64s/CoHoEARoMH9KTcA/Ry7236oOH6+zk16sw2d21eQ5jgKNCqP2RuAhsfDudC9b1059wF92S8nTVEc6JDyuBI0elxOul/MfUCnl+V7wb9Egg5FiV4J+pBvfse94Gl4QJzacx8FGpWr7A0kOl98ugF6B6DRwvMNBFoAGoHK41rQLpp/CefyfYBesviomulqHGgwhOBq0LqiXfFazncE/YAmDrwb7/ZMF0k0uIJ4PWh0iYmDD8R+3Pc4NhFznASjCKNloCEb7wagzRuMUh/ZxqvrrqA1PzWHWs9GUZzjf6hQX94EtCmiyCKGweqquI6bHYzSqmmjP6ZQEz1NkbFLWTORzzcBbSL98mJuo0CVXxdAoyV674NW0aCBV6JR7xWDdTWxgSR4cnH2Uwh0WUVHKvlxHZOBG8fLhFRnJpjsEVqcZUuSORjlLEYXg47VrYrJaQSWqjFswpg9WEL6JtYwBSMO82KU8yUYmzguM5uJkDk+mkMjBrA/1YekGMzgsyt0/+TicqiJbeKc2W2Lyh1pjNE7TXYjdHkqiqJ9nYU7JKUKvKLVKw7qvsQev31BkTlTiTuXf4Mf3q6VRx+1XcafyY3ic7ZPlK0i2rWbdasyGFizejdCkkpz+Exq9so20WfvPeXHY1UZEc7zqnosJ1/QCn2ka9MhJj7sA/QvSh+gP0B/gP5IrwI9tr1GRlV93TfSgjZbd6UtCjLwhk+m/RteVVC2gSWeQs+Hnx7X4LUvbI2mPhmwdalM/2kSXdvgb2AQRhqZEjBVvRur7sAZdxkPI4ao+/ilfw6NufCVjp5ra+0utEV1eQf5MLo0Exva1VrSUdFl1yQK/OAQtq3sbuBhQ83n7k49CR01aDt6RLYfxgy3TZa2yV3xLSzXJDFs64o3wTHMXpeKqF7xmJH6sLouCSR1Naz5yLdD0Iw0WweVC7eVqK2DyM4PQoiSrUjw7sN28FNErioXECgRI4BfSjCS6OarrStK9cJ97G0X96PvUGK8LaW50ibbaTp45Nx2jovxTFffUbWW4DWZ5or5i9ffAcpMm1j/l01WpAlOcqD3PFE9FwOufZu29y6OiQn0kNoVv7ptQyHDJGneFHeOPWwOser3y/XNxvldUJOjjfvf96qidhnX/DZParMBvxe1VXYrWRP4IU3weisRFrT+/PnhrO8IG1mYOtB1Lge6fUTZIoT77HkmXbeF+7Nui3FmWrxfReOe3JuVI2K8ZD032sp00SXX5xFo0oSAYkx5wvS32JTqeo8/d8/1nxA+aE77lRhpTxjXGZuvGu/9rg1QFQ2CNkFPSuekylExoBntbSKz0ez8X7IFbSv4jJmusWkQbTajUfeuhK5RZxF85EJPG/mQ+k9Wt0WyhNVvS7nhX5gfRNpqLUOSTrI0aDVqOAi6htOvEXaPwqCV76oWKuFfUQt6uJPFqyoEuhUjpFQj0WyUg5gvWQ+0Tf020YTI/tgmklbSlQeaaBlA5w50nUv3iBk3mM1TSw3l3S/IGNBbm/AcaKys47/rvXtOeqBVfcBgHzS2eff9rtH2lXigbVW4q6oJcfVAm91E8ovtXzPQ60e3/cpEwpRZ3932QT+MQeOuM1Z10Fo98DFoovWCHk/OHWj7XrBopP+szJuQaOTmXSDR495PSDSakegfVux4c9kDLQNVeaBp0uof1IEeSTTTnWL2rJAWdDoCzUYSndBUvwwMSTS1SPc90GejPNqYCF0ZBxzpGnRjddiRaQHoZvyQYxnrfuqwBd1cqTN9tsSE6f4lBnRboA96tEUBGgxZ/W2eAN090ijz/2Jp1uh9HU3r19aBts/r71HZDPPQiQ2rdl2POD0YDxreJjhYKOysjjr1pAxbRW2bNAs6sOxoAssYHk0e1CivAe1U+RTotsHYDYaN1fHVAy2svsJ90HbApW2TQqBVjNUBKk4MWx0KuzG8b3UM8pohH301uoOfo1SHqG0CAkq0HKuO2urYtqAvWnESSsOgSc8qsqCdDFGEANDmvhiAxkaZp2hGon+9jtYdU0IIbcS5Nl2lo5UPeqyj9VUjhRMSTfBYR2OaDEfCDrT8Yey+PmhJutL6BNMbgX4IgcYe6JFNMVYus6AfYPNuy1vdgS+d1TEGnZppYcJINGjzWXg7pxrQF/PayFCiVc80JcABwiBoGQn6EG9Hl8Ms7qBZ3Vg7d7ITFjkJOmRHN3J3QNzes6C/e6CR2+68QKKdZfwFBF2PGwHQ5jnDxngDeH/CwoVLsjFO3Ec8B1qJXsYZ0KzO62wO3WG5NWd6CJfZgGa9DAtAG35MUGosBGGtaWM0u0QHoM3PGYVB9x6pQdfDGgS6HnJh0M5MUgKbJinI6sDNlLa34RAn81bHNgJ0k3D9xpvphfNx9HLQpaBl+5MLamx1qAFo89sMs1YH709YdAfIGQSN0BcWlOjeXlTVKdeVqg/VZu5wI6zcudu15wnzznzSdmWnVWhzGDcb7XnFiteW7VfFav+Lao/uxlav8joONzXFWMeaaDLQpirRLhu4PM7JBwU7UW5dZc2dtqi6LMrcbyGmXUH2m9BzzVHWdqbO2PR+bHd0VzSo7p4cZbS/c04G1/4H9zeFQx68tZoAAAAASUVORK5CYII=',
   logoUrl: '',            // hosted https logo; overrides logoData in the email when set
   refillUrl: 'https://intakeq.com/new/h1qhys/1tx02s',
@@ -518,6 +522,12 @@ function setValues(node, data) {
   });
   syncType(node);
   syncOrderStatus(node);
+  syncOwed(node);
+}
+
+// Owed Medication only shows when Medication Owed? is Yes
+function syncOwed(node) {
+  $('.owed-field', node).hidden = $('[data-f=medOwed]', node).value !== 'Yes';
 }
 
 function addItem(data = {}) {
@@ -527,6 +537,7 @@ function addItem(data = {}) {
   fillSelect($('[data-f=type]', node), CONFIG.forms, 'Select');
   fillSelect($('[data-f=freq]', node), CONFIG.frequencies, 'Select');
   fillSelect($('[data-f=supplies]', node), CONFIG.supplies, 'Select');
+  fillSelect($('[data-f=medOwed]', node), ['No', 'Yes']);
   fillSelect($('[data-f=status]', node), CONFIG.statusLabels, 'Select');
   fillSelect($('[data-f=pharmacy]', node), CONFIG.pharmacies, 'Select');
   fillSelect($('[data-f=shipMethod]', node), CONFIG.shippingMethods);
@@ -550,7 +561,7 @@ function syncOrderStatus(node) {
   const comments = $('[data-f=comments]', node), field = comments.closest('.field');
   comments.required = onHold;
   comments.setAttribute('aria-required', String(onHold));
-  comments.placeholder = onHold ? 'Required for on-hold orders' : 'Optional';
+  comments.placeholder = onHold ? 'Required for on-hold orders' : 'N/A';
   comments.setCustomValidity(onHold && !comments.value.trim() ? 'Add comments explaining why this order is on hold.' : '');
   $('.req', field).hidden = !onHold;
   if (!onHold || comments.value.trim()) field.classList.remove('invalid');
@@ -849,14 +860,17 @@ function noteLine(label, text, alert = false) {
 
 function itemCard(it) {
   const inj = it.type === 'Injectable';
+  const orderTotal = fmtMoney(it.total || '');
   const stats = [
+    // row 1: Program | Units available | Supplies requested
     ['Program', (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
-    ['Frequency', it.freq],
     ['Units available', inj ? it.weeksPerMl : ''],
     ['Supplies requested', it.supplies],
-    ['Qty shipping', it.ship || '-'],
-    ['Qty owed', it.owed || '0']
-  ].filter(([, v]) => v !== '');
+    // row 2: Administration | Frequency | Number of shipments
+    ['Administration', it.admin],
+    ['Frequency', it.freq],
+    ['Number of shipments', it.shipments]
+  ].filter(([, v]) => v !== '' && v != null);
   let rows = '';
   for (let i = 0; i < stats.length; i += 3) {
     const chunk = stats.slice(i, i + 3);
@@ -868,10 +882,19 @@ function itemCard(it) {
     it.type ? pill(esc(it.type), '#e9f0f3', C.navy, '#d3e0e5') : '',
     it.tag ? pill(`&#10052; ${esc(it.tag)}`, C.pill, C.accentDark, '#cde8f0') : ''
   ].join('');
-  const notes = noteLine('Administration', it.admin) + noteLine('Comments', it.comments, it.status === HOLD_STATUS);
+  const notes = noteLine('Comments', it.comments, it.status === HOLD_STATUS)
+    + (it.medOwed === 'Yes' ? noteLine('Owed Medication', it.owedMed) : '');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-left:4px solid ${C.blue};border-radius:14px;margin:0 0 10px 0;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
 <tr><td style="padding:14px 16px 6px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+<td valign="top">
 <div style="font-family:${F};font-size:15px;line-height:21px;font-weight:700;color:${C.navy};">${esc(it.name)}</div>${pills ? `<div>${pills}</div>` : ''}
+</td>
+${orderTotal ? `<td valign="top" align="right" style="padding-left:12px;white-space:nowrap;">
+<div style="font-family:${F};font-size:11px;line-height:14px;font-weight:600;color:${C.muted};">Order total</div>
+<div style="font-family:${F};font-size:16px;line-height:22px;font-weight:800;color:${C.navy};padding-top:1px;">${esc(orderTotal)}</div>
+</td>` : ''}
+</tr></table>
 </td></tr>
 <tr><td style="padding:2px 10px ${notes ? 4 : 10}px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="6" border="0" style="border-collapse:separate;">${rows}</table></td></tr>
 ${notes}${notes ? spacer(4) : ''}
@@ -897,7 +920,7 @@ function totalBar(amount, label, strong) {
   return `<tr><td style="padding:0 30px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ${box}>
 <tr>
-<td${strong ? ' valign="middle"' : ''} style="padding:${strong ? 16 : 14}px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:600;color:${strong ? '#d9edf2' : C.muted};">${esc(label)}</td>
+<td${strong ? ' valign="middle"' : ''} style="padding:${strong ? 16 : 14}px 20px;font-family:${F};font-size:${strong ? 24 : 14}px;line-height:${strong ? 30 : 20}px;font-weight:600;color:${strong ? '#ffffff' : C.muted};">${esc(label)}</td>
 <td align="right"${strong ? ' valign="middle"' : ''} style="padding:${strong ? 16 : 14}px 20px;font-family:${F};font-size:${strong ? 24 : 20}px;line-height:${strong ? 30 : 28}px;font-weight:${strong ? 700 : 800};color:${strong ? '#ffffff' : C.navy};${strong ? 'white-space:nowrap;font-variant-numeric:tabular-nums;' : ''}">${esc(amount)}</td>
 </tr></table></td></tr>`;
 }
@@ -911,8 +934,6 @@ function orderSection(it, i, n) {
   return `${divider}
 ${heading(title, n > 1 ? `${i + 1} of ${n}` : '')}
 <tr><td style="padding:0 30px;">${itemCard(it)}</td></tr>
-${shipmentsBar(it.shipments)}
-${totalBar(fmtMoney(it.total), 'Order total', false)}
 ${miniLabel('Order details')}
 ${kvPanel([
   ['Status of order', statusPill(it.status), true],
@@ -1001,7 +1022,7 @@ function buildEmailBody(s) {
     ['Sale / promotion', s.promo || 'n/a'],
     ['Discount code', s.discount || 'n/a']
   ]);
-  const paid = s.totalPaid !== '' ? spacer(12) + totalBar(fmtMoney(s.totalPaid), 'Total', true) : '';
+  const paid = s.totalPaid !== '' ? spacer(28) + totalBar(fmtMoney(s.totalPaid), 'Total', true) : '';
 
   const orders = n
     ? s.items.map((it, i) => orderSection(it, i, n)).join('')
@@ -1036,13 +1057,14 @@ function buildEmailBody(s) {
 <tr><td style="padding:26px 30px 0;font-family:${F};">
 <div style="font-size:18px;line-height:24px;font-weight:700;color:${C.ink};">Hi there,</div>
 <div style="font-size:15px;line-height:23px;color:${C.muted};padding-top:6px;">Thank you for choosing ${esc(CONFIG.clinicName)}!</div>
+<div style="font-size:15px;line-height:23px;font-style:italic;color:${C.accentDark};padding-top:2px;">${esc(CONFIG.tagline)}</div>
 </td></tr>
 
 ${heading('Patient information')}
 ${patient}
-${paid}
 
 ${orders}
+${paid}
 ${treatmentNotice()}
 ${comments}
 ${links}
@@ -1277,6 +1299,7 @@ formCol.addEventListener('change', e => {
   if (e.target.dataset.f === 'med') syncProduct(node);
   if (e.target.dataset.f === 'program') syncProgram(node);
   if (e.target.dataset.f === 'type') syncType(node);
+  if (e.target.dataset.f === 'medOwed') syncOwed(node);
   if (e.target.dataset.f === 'status' || e.target.dataset.f === 'comments') syncOrderStatus(node);
   const multi = e.target.closest('.multi');
   if (multi) syncMulti(multi);
