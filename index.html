@@ -132,6 +132,10 @@ button{font:inherit}
 .field input.calc:focus{box-shadow:0 0 0 3px rgba(139,203,221,.35)}
 .field.hl label{color:var(--accent)}
 .field.hl input{background:rgba(139,203,221,.32);border-color:rgba(42,142,168,.55);font-weight:700}
+/* Owed Medication stands out with a light blue highlight */
+.field.owed-field label{color:var(--accent);font-weight:700}
+.field.owed-field input{background:rgba(139,203,221,.4);border-color:rgba(42,142,168,.6);font-weight:600}
+.field.owed-field input::placeholder{color:rgba(42,100,120,.6);font-weight:500}
 /* product block: accent edge as inset shadow so dropdown menus aren't clipped */
 .item{overflow:visible;padding-bottom:22px;box-shadow:inset 4px 0 0 #6fbdd2,0 4px 18px rgba(9,46,57,.06)}
 .item::before{display:none}
@@ -326,8 +330,8 @@ button{font:inherit}
       <!--<div class="field"><label>Vials (mL) being shipped</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
       <div class="field"><label>#mLs OWED</label><input data-f="owed" type="number" min="0" placeholder="0"></div>-->
       <div class="field span-3 directions-field" hidden><label>Directions for use</label><input data-f="directions" placeholder="e.g. Take 2 capsules daily with food"></div>
+      <div class="field span-3 owed-field" hidden><label>Owed Medication</label><input data-f="owedMed" placeholder="Shipment #2, #3, etc."></div>
       <div class="field span-3"><label>Comments<span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="N/A"></div>
-      <div class="field span-3 owed-field" hidden><label style="color: purple;">Owed Medication</label><input data-f="owedMed" placeholder="Describe the medication owed"></div>
     </div>
 
 </template>
