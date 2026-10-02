@@ -829,7 +829,8 @@ const F = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 const C = {
   navy: '#092e39', blue: '#8bcbdd', accent: '#2a8ea8', accentDark: '#1f7489', pill: '#e1f2f7',
   ink: '#12303a', muted: '#5d7682', line: '#dcecf1', panel: '#f3f9fb', stat: '#eef7fa',
-  page: '#e3f0f5', card: '#fbfdfe', hl: '#dff1f6', hlLine: '#b9e1ec', danger: '#c62828'
+  page: '#e3f0f5', card: '#fbfdfe', hl: '#dff1f6', hlLine: '#b9e1ec', danger: '#c62828',
+  banana: '#fffec5'
 };
 
 function heading(text, right = '') {
@@ -896,6 +897,13 @@ function noteLine(label, text, alert = false) {
     : '';
 }
 
+// Owed Medication: banana yellow highlight. Nested table keeps the color inside the card padding (Gmail-safe: bgcolor + inline style).
+function owedLine(label, text) {
+  return text
+    ? `<tr><td style="padding:0 16px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.banana}" style="border-collapse:separate;background-color:${C.banana};border-radius:10px;"><tr><td style="padding:8px 12px;font-family:${F};font-size:13px;line-height:19px;color:${C.ink};"><span style="font-weight:700;color:${C.navy};">${esc(label)}:</span> ${esc(text)}</td></tr></table></td></tr>`
+    : '';
+}
+
 function itemCard(it) {
   const inj = it.type === 'Injectable';
   const wellness = (PRODUCTS[it.med] || {}).group === WELLNESS_GROUP;   // Benefits pill + one-line Program
@@ -924,7 +932,7 @@ function itemCard(it) {
   ].join('');
   const notes = (wellness ? programBox(it.program, it.shipments) + noteLine('Directions for use', it.directions) : '')
     + noteLine('Comments', it.comments, it.status === HOLD_STATUS)
-    + (it.medOwed === 'Yes' ? noteLine('Owed Medication', it.owedMed) : '');
+    + (it.medOwed === 'Yes' ? owedLine('Owed Medication', it.owedMed) : '');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-left:4px solid ${C.blue};border-radius:14px;margin:0 0 10px 0;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
 <tr><td style="padding:14px 16px ${pills ? 0 : 6}px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
