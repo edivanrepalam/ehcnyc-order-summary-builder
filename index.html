@@ -356,6 +356,7 @@ button{font:inherit}
    - form auto-fills the Form field; tag shows as a pill in the email
    ============================================================ */
 const FRIDGE = 'Keep refrigerated';
+const COOL_DRY = 'Store in a cool, dry place (away from heat, moisture & sunlight).';
 const HOLD_STATUS = 'On hold - see comments above';
 const CONFIG = {
   clinicName: 'Elite Health Center NYC',
@@ -405,7 +406,7 @@ const CONFIG = {
         { label: '5mL (10mg/mL)', pharmacy: 'Striker Pharmacy' }] },
       { name: 'Glow: GHK-Cu, BPC-157 & TB-500', form: 'Injectable', tag: FRIDGE, programs: [
         { label: '3mL (9mg/1.66mg/3.33mg/mL)', pharmacy: 'Striker Pharmacy' }] },
-      { name: 'Bioboost Plus', form: 'Injectable', tag: FRIDGE, programs: [
+      { name: 'Bioboost Plus', form: 'Injectable', tag: COOL_DRY, programs: [
         { label: '10mL', pharmacy: 'Hallandale Pharmacy' },
         { label: '30mL', pharmacy: 'Hallandale Pharmacy' }] },
       { name: 'MICB12', form: 'Gel Troches', programs: ['30 troches'] }
@@ -868,8 +869,17 @@ function kvPanel(rows) {
   }).join(''));
 }
 
-function pill(text, bg, fg, border) {
-  return `<span style="display:inline-block;white-space:nowrap;margin:6px 6px 0 0;padding:3px 10px;border-radius:999px;background-color:${bg};border:1px solid ${border};font-family:${F};font-size:11px;line-height:16px;font-weight:700;color:${fg};">${text}</span>`;
+function pill(text, bg, fg, border, wrap = false) {
+  // wrap = long text (storage note): may break onto a second line, softer corners so it never looks like a stretched capsule
+  const shape = wrap ? 'white-space:normal;border-radius:12px;' : 'white-space:nowrap;border-radius:999px;';
+  return `<span style="display:inline-block;${shape}margin:6px 6px 0 0;padding:3px 10px;background-color:${bg};border:1px solid ${border};font-family:${F};font-size:11px;line-height:16px;font-weight:700;color:${fg};">${text}</span>`;
+}
+
+// Storage tag pill: refrigerated keeps the teal snowflake pill; the cool/dry note is sage green with no icon.
+function tagPill(tag) {
+  if (!tag) return '';
+  if (tag === COOL_DRY) return pill(esc(tag), '#e6f3e8', '#27613a', '#c4e0c9', true);
+  return pill(`&#10052; ${esc(tag)}`, C.pill, C.accentDark, '#cde8f0');
 }
 
 function statusPill(label) {
@@ -930,7 +940,7 @@ function itemCard(it) {
   const pills = [
     it.type ? pill(esc(it.type), '#e9f0f3', C.navy, '#d3e0e5') : '',
     it.benefit ? pill(esc(it.benefit), '#e9f0f3', C.navy, '#d3e0e5') : '',
-    it.tag ? pill(`&#10052; ${esc(it.tag)}`, C.pill, C.accentDark, '#cde8f0') : ''
+    tagPill(it.tag)
   ].join('');
   const notes = (wellness ? programBox(it.program, it.shipments) + noteLine('Directions for use', it.directions) : '')
     + noteLine('Comments', it.comments, it.status === HOLD_STATUS)
