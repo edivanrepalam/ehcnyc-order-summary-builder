@@ -239,6 +239,11 @@ button{font:inherit}
         <div class="field span-3"><label>Dosing Conversion</label><input data-k="dosingUrl" type="url" data-default="dosingConversionUrl" placeholder="https://"></div>
         <div class="field span-3"><label># Of Weeks For Treatment (Weight Loss Meds.)</label><input data-k="weeksUrl" type="url" data-default="weeksOfTreatmentUrl" placeholder="https://"></div>
       </div>
+      <div id="guideLinks" hidden>
+        <div class="sub-head">Patient guide <span style="font-weight:500;color:#8aa0aa">(added from the product you selected)</span></div>
+        <div id="guideRows"></div>
+        <p class="help">Leave a link blank to hide that guide button.</p>
+      </div>
       <div id="extraLinks"></div>
       <button type="button" class="btn btn-add" id="addLink" style="margin-top:16px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -346,6 +351,16 @@ button{font:inherit}
   </div>
 </template>
 
+<template id="guideTpl">
+  <div class="link-row guide-row">
+    <div class="field"><label>Button text</label><input data-g="text"></div>
+    <div class="field"><label>Link</label><input data-g="url" type="url" placeholder="https://"></div>
+    <button type="button" class="icon-btn" data-act="restore-guide" title="Restore the default" aria-label="Restore the default guide button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+  </div>
+</template>
+
 <div class="toast glass" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -358,6 +373,14 @@ button{font:inherit}
 const FRIDGE = 'Keep refrigerated';
 const COOL_DRY = 'Store in a cool, dry place (away from heat, moisture & sunlight).';
 const HOLD_STATUS = 'On hold - see comments above';
+// Patient Guide buttons. A product with a `guide` below shows that button in the email by default.
+const GUIDE = {
+  tirzepatideGlycineB12: { text: 'Tirzepatide/Glycine/B12 Patient Guide', url: 'https://canva.link/tirzepatide-glycine-b12-guide' },
+  semaglutideGlycineB12: { text: 'Semaglutide/Glycine/B12 Patient Guide', url: 'https://canva.link/semaglutide-glycine-b12-guide' },
+  semaglutideFlexDose:   { text: 'Semaglutide Flex-Dose Patient Guide',   url: 'https://canva.link/semaglutide-flex-dose-guide' },
+  tirzepatideFlexDose:   { text: 'Tirzepatide Flex-Dose Patient Guide',   url: 'https://canva.link/tirzepatide-flex-dose-guide' },
+  sermorelin:            { text: 'Sermorelin Patient Guide',              url: 'https://canva.link/ehcnyc-sermorelin' }
+};
 const CONFIG = {
   clinicName: 'Elite Health Center NYC',
   tagline: "New York's Premier Online Weight Loss Clinic.",
@@ -371,13 +394,13 @@ const CONFIG = {
   processingTime: 'Up to 10 business days',
   catalog: [
     { group: 'Weight loss', items: [
-      { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy',
+      { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy', guide: GUIDE.tirzepatideGlycineB12,
         programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '12mL-120mg'] },
-      { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy',
+      { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy', guide: GUIDE.semaglutideGlycineB12,
         programs: ['0.5mL-2.5mg', '1mL-5mg', '3mL-15mg', '4mL-20mg'] },
-      { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
+      { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy', guide: GUIDE.tirzepatideFlexDose,
         programs: ['1mL-10mg', '3mL-30mg', '4mL-40mg', '5mL-50mg', '6mL-60mg', '10mL-100mg', '4mL-60mg (15mg/mL)'] },
-      { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
+      { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy', guide: GUIDE.semaglutideFlexDose,
         programs: ['1mL-2.5mg', '2mL-5mg', '3mL-7.5mg', '3mL-15mg (5mg/mL)', '5mL-12.5mg', '10mL-25mg'] },
       { name: 'Compounded Tirzepatide Flex-Dose Forte', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
         programs: ['4mL - 60mg (15mg/mL)'] },
@@ -387,7 +410,7 @@ const CONFIG = {
         programs: ['2mg', '4mg', '6mg', '8mg', '10mg', '12mg'] }
     ]},
     { group: 'Sermorelin', pharmacy: 'Hallandale Pharmacy', items: [
-      { name: 'Sermorelin (injectable)', form: 'Injectable', tag: FRIDGE,
+      { name: 'Sermorelin (injectable)', form: 'Injectable', tag: FRIDGE, guide: GUIDE.sermorelin,
         programs: ['6mL', '12mL'] },
       { name: 'Sermorelin (troches)', form: 'Troches',
         programs: ['400mcg, 30ct.', '400mcg, 60ct.', '600mcg, 30ct.', '600mcg, 60ct.'] }
@@ -512,6 +535,43 @@ $('#extraLinks').addEventListener('click', e => {
   render();
 });
 
+/* ---------- patient guide buttons (default for the selected product) ---------- */
+function guideRow(g) {
+  const node = $('#guideTpl').content.firstElementChild.cloneNode(true);
+  node.dataset.key = g.url;
+  $('[data-g=text]', node).value = g.text;
+  $('[data-g=url]', node).value = g.url;
+  return node;
+}
+// One row per distinct guide among the products in the order, in the order the products appear.
+// A row the person already edited (or blanked to hide it) is kept while its product stays in the order.
+function syncGuides() {
+  const wanted = [];
+  $$('#items .item').forEach(n => {
+    const p = PRODUCTS[$('[data-f=med]', n).value];
+    if (p && p.guide && !wanted.some(g => g.url === p.guide.url)) wanted.push(p.guide);
+  });
+  const box = $('#guideRows');
+  const have = new Map($$('.guide-row', box).map(r => [r.dataset.key, r]));
+  have.forEach((row, key) => { if (!wanted.some(g => g.url === key)) row.remove(); });
+  wanted.forEach((g, i) => {
+    const row = have.get(g.url) || guideRow(g);
+    if (box.children[i] !== row) box.insertBefore(row, box.children[i] || null);
+  });
+  $('#guideLinks').hidden = !wanted.length;
+}
+$('#guideRows').addEventListener('click', e => {
+  const b = e.target.closest('[data-act=restore-guide]');
+  if (!b) return;
+  const row = b.closest('.guide-row');
+  const g = PRODUCTS.map(p => p.guide).find(x => x && x.url === row.dataset.key);
+  if (!g) return;
+  $('[data-g=text]', row).value = g.text;
+  $('[data-g=url]', row).value = g.url;
+  $$('.field.invalid', row).forEach(f => f.classList.remove('invalid'));
+  render();
+});
+
 /* ---------- form setup ---------- */
 function applyDefaults() {
   $$('[data-k]').forEach(el => { el.value = ''; });
@@ -519,6 +579,8 @@ function applyDefaults() {
   $$('[data-default]').forEach(el => { el.value = CONFIG[el.dataset.default] || ''; });
   $$('.field.invalid').forEach(f => f.classList.remove('invalid'));
   $('#extraLinks').innerHTML = '';
+  $('#guideRows').innerHTML = '';
+  $('#guideLinks').hidden = true;
   const via = $('#viaMulti');
   $('.multi-menu', via).innerHTML = CONFIG.requestedVia.map(v =>
     `<label class="multi-opt"><input type="checkbox" value="${esc(v)}"><span>${esc(v)}</span></label>`).join('');
@@ -576,6 +638,7 @@ function addItem(data = {}) {
   setValues(node, data);
 
   $('#items').appendChild(node);
+  syncGuides();
   renumber();
   render();
   return node;
@@ -814,6 +877,10 @@ function readState() {
     text: $('[data-l=text]', r).value.trim(),
     url: $('[data-l=url]', r).value.trim()
   })).filter(l => l.text && safeUrl(l.url));
+  s.guides = $$('#guideRows .guide-row').map(r => ({
+    text: $('[data-g=text]', r).value.trim(),
+    url: $('[data-g=url]', r).value.trim()
+  })).filter(g => g.text && safeUrl(g.url));
   s.items = $$('#items .item').map(n => {
     const o = readItem(n);
     const p = PRODUCTS[o.med];
@@ -1102,6 +1169,7 @@ function buildEmailBody(s) {
     [s.injectionUrl, 'How to Inject (Step by Step)'],
     [s.dosingUrl, 'Dosing Conversion'],
     [s.weeksUrl, '# Of Weeks For Treatment (Weight Loss Meds.)'],
+    ...s.guides.map(g => [g.url, g.text]),
     ...s.links.map(l => [l.url, l.text])
   ].filter(([url]) => safeUrl(url))
    .map(([url, text], i) => button(url, text, i % 2 === 0))
@@ -1222,6 +1290,12 @@ function validate() {
     if (!order.value.trim()) flag(order, 'order #' + which);
   });
   missingHoldComments().forEach(({ input, label }) => flag(input, label));
+  $$('#guideRows .guide-row').forEach(r => {
+    const t = $('[data-g=text]', r), u = $('[data-g=url]', r);
+    if (!u.value.trim()) return;                       // a blank link hides the button
+    if (!safeUrl(u.value.trim())) flag(u, 'full https link for the patient guide');
+    else if (!t.value.trim()) flag(t, 'button text for the patient guide');
+  });
   $$('#extraLinks .link-row').forEach(r => {
     const t = $('[data-l=text]', r), u = $('[data-l=url]', r);
     if (!t.value.trim() && !u.value.trim()) return;
@@ -1350,6 +1424,7 @@ $('#items').addEventListener('click', e => {
     item.remove();
     if (only) addItem();
   }
+  syncGuides();
   renumber();
   render();
 });
@@ -1364,7 +1439,7 @@ formCol.addEventListener('input', e => {
 });
 formCol.addEventListener('change', e => {
   const node = e.target.closest('.item');
-  if (e.target.dataset.f === 'med') syncProduct(node);
+  if (e.target.dataset.f === 'med') { syncProduct(node); syncGuides(); }
   if (e.target.dataset.f === 'program') syncProgram(node);
   if (e.target.dataset.f === 'type') syncType(node);
   if (e.target.dataset.f === 'medOwed') syncOwed(node);
