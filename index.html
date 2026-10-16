@@ -1242,6 +1242,7 @@ frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="vie
 function render() {
   cancelAnimationFrame(raf);
   raf = requestAnimationFrame(() => {
+    syncGuides();
     $$('#items .item').forEach(n => {
       const badge = $('.ph-badge', n), ph = $('[data-f=pharmacy]', n).value;
       badge.textContent = ph; badge.hidden = !ph;
