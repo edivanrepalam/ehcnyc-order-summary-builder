@@ -249,8 +249,8 @@ button{font:inherit}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         Add another link
       </button>
-      <div class="sub-head">Request a Refill <span style="font-weight:500;color:#8aa0aa">(always the last button, set apart from the others)</span></div>
-      <div class="field"><label>Request a Refill link</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
+      <div class="sub-head">Request a Refill Here <span style="font-weight:500;color:#8aa0aa">(always the last button, set apart from the others)</span></div>
+      <div class="field"><label>Request a Refill Here link</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
     </div>
 
     <div class="card glass">
@@ -393,6 +393,7 @@ const CONFIG = {
   injectionGuideUrl: 'https://drive.google.com/file/d/1nzs1cHDSPBIJfhMJLHbhCyjDbXiUL9Lw/view',
   dosingConversionUrl: 'https://canva.link/8qqqc9xz5ayqxl9',
   weeksOfTreatmentUrl: 'https://canva.link/number-of-weeks-of-treatment',
+  refillButton: { text: 'Request a Refill Here', color: '#FFEE8C', border: '#F0DB6A', shadow: 'rgba(196,166,20,0.28)' },
   processingTime: 'Up to 10 business days',
   catalog: [
     { group: 'Weight loss', items: [
@@ -1081,9 +1082,11 @@ ${kvPanel([
 }
 
 // filled = light blue like Request a Refill; otherwise white with a blue border
-function button(url, text, filled = true) {
-  const bg = filled ? C.blue : '#ffffff';
-  const style = filled
+function button(url, text, filled = true, custom = null) {
+  const bg = custom ? custom.color : filled ? C.blue : '#ffffff';
+  const style = custom
+    ? `background-color:${bg};border:1px solid ${custom.border};box-shadow:0 8px 20px ${custom.shadow};`
+    : filled
     ? `background-color:${bg};background-image:linear-gradient(135deg,#a9dae8 0%,${C.blue} 100%);border:1px solid ${C.hlLine};box-shadow:0 8px 20px rgba(42,142,168,0.25);`
     : `background-color:${bg};border:1.5px solid ${C.blue};`;
   return `<tr><td align="center" style="padding:0 30px 12px;">
@@ -1176,7 +1179,7 @@ function buildEmailBody(s) {
   ].filter(([url]) => safeUrl(url))
    .map(([url, text], i) => button(url, text, i % 2 === 0))
    .join('');
-  const refill = safeUrl(s.refillUrl) ? (group ? spacer(28) : '') + button(s.refillUrl, 'Request a Refill', true) : '';
+  const refill = safeUrl(s.refillUrl) ? (group ? spacer(28) : '') + button(s.refillUrl, CONFIG.refillButton.text, true, CONFIG.refillButton) : '';
   const buttons = group + refill;
   const links = buttons ? spacer(28) + buttons : '';
 
