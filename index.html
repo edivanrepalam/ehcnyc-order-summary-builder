@@ -180,6 +180,7 @@ button{font:inherit}
 .link-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto;gap:12px;align-items:end;margin-top:16px}
 .link-row .icon-btn{margin-bottom:3px}
 @media (max-width:640px){.link-row{grid-template-columns:1fr}}
+#guideLinks:not([hidden]) + .grid{margin-top:18px}
 </style>
 </head>
 <body>
@@ -231,24 +232,25 @@ button{font:inherit}
 
     <div class="card glass">
       <div class="card-head"><h2>Links</h2></div>
-      <div class="grid">
-        <div class="field span-3"><label>Request a Refill</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
-        <div class="field span-3"><label>View your dose in # of units here!</label><input data-k="doseUrl" type="url" data-default="doseGuideUrl" placeholder="https://">
-          <p class="help">Leave blank to hide this button.</p></div>
-        <div class="field span-3"><label>How to Inject (Step by Step)</label><input data-k="injectionUrl" type="url" data-default="injectionGuideUrl" placeholder="https://"></div>
-        <div class="field span-3"><label>Dosing Conversion</label><input data-k="dosingUrl" type="url" data-default="dosingConversionUrl" placeholder="https://"></div>
-        <div class="field span-3"><label># Of Weeks For Treatment (Weight Loss Meds.)</label><input data-k="weeksUrl" type="url" data-default="weeksOfTreatmentUrl" placeholder="https://"></div>
-      </div>
       <div id="guideLinks" hidden>
-        <div class="sub-head">Patient guide <span style="font-weight:500;color:#8aa0aa">(added from the product you selected)</span></div>
+        <div class="sub-head first">Patient guide <span style="font-weight:500;color:#8aa0aa">(added from the product you selected)</span></div>
         <div id="guideRows"></div>
         <p class="help">Leave a link blank to hide that guide button.</p>
+      </div>
+      <div class="grid" id="linkGrid">
+        <div class="field span-3"><label>How to Inject (Step by Step)</label><input data-k="injectionUrl" type="url" data-default="injectionGuideUrl" placeholder="https://"></div>
+        <div class="field span-3"><label>View your dose in # of units here!</label><input data-k="doseUrl" type="url" data-default="doseGuideUrl" placeholder="https://">
+          <p class="help">Leave blank to hide this button.</p></div>
+        <div class="field span-3"><label>Dosing Conversion</label><input data-k="dosingUrl" type="url" data-default="dosingConversionUrl" placeholder="https://"></div>
+        <div class="field span-3"><label># Of Weeks For Treatment (Weight Loss Meds.)</label><input data-k="weeksUrl" type="url" data-default="weeksOfTreatmentUrl" placeholder="https://"></div>
       </div>
       <div id="extraLinks"></div>
       <button type="button" class="btn btn-add" id="addLink" style="margin-top:16px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         Add another link
       </button>
+      <div class="sub-head">Request a Refill <span style="font-weight:500;color:#8aa0aa">(always the last button, set apart from the others)</span></div>
+      <div class="field"><label>Request a Refill link</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
     </div>
 
     <div class="card glass">
@@ -1162,18 +1164,20 @@ function buildEmailBody(s) {
     ? heading('Comments') + panel(`<tr><td style="padding:14px 16px;font-family:${F};font-size:14px;line-height:21px;color:${C.ink};">${nl2br(s.comments)}</td></tr>`)
     : '';
 
-  // buttons alternate: filled, outlined, filled, outlined... (skipping any left blank)
-  const buttons = [
-    [s.refillUrl, 'Request a Refill'],
-    [s.doseUrl, 'View your dose in # of units here!'],
+  // order: patient guide(s), How to Inject, View your dose, Dosing Conversion, # Of Weeks, any custom links;
+  // they alternate filled / outlined (skipping any left blank). Request a Refill comes last, set apart by extra space.
+  const group = [
+    ...s.guides.map(g => [g.url, g.text]),
     [s.injectionUrl, 'How to Inject (Step by Step)'],
+    [s.doseUrl, 'View your dose in # of units here!'],
     [s.dosingUrl, 'Dosing Conversion'],
     [s.weeksUrl, '# Of Weeks For Treatment (Weight Loss Meds.)'],
-    ...s.guides.map(g => [g.url, g.text]),
     ...s.links.map(l => [l.url, l.text])
   ].filter(([url]) => safeUrl(url))
    .map(([url, text], i) => button(url, text, i % 2 === 0))
    .join('');
+  const refill = safeUrl(s.refillUrl) ? (group ? spacer(28) : '') + button(s.refillUrl, 'Request a Refill', true) : '';
+  const buttons = group + refill;
   const links = buttons ? spacer(28) + buttons : '';
 
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.page}" style="background-color:${C.page};background-image:linear-gradient(160deg,#d3eaf2 0%,#eef6f9 45%,#d8e9ef 100%);">
