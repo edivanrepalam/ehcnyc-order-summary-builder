@@ -323,8 +323,8 @@ button{font:inherit}
       <div class="field"><label>Form</label><select data-f="type"></select></div>
       <div class="field"><label class="prog-label">Program (mL / mg)</label><select data-f="program"></select></div>
       <div class="field benefit-field" hidden><label>Benefits</label><select data-f="benefit"></select></div>
-      <div class="field wl-hide"><label>Frequency</label><select data-f="freq"></select></div>
       <div class="field admin-field wl-hide"><label>Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous"></div>
+      <div class="field wl-hide"><label>Frequency</label><select data-f="freq"></select></div>
       <div class="field wpm-field"><label># of units available</label>
         <div class="units-combo">
           <input data-f="weeksPerMl" type="text" role="combobox" aria-autocomplete="none" aria-haspopup="listbox" aria-expanded="false" placeholder="Select or type units" autocomplete="off" disabled>
@@ -968,7 +968,7 @@ function stat(label, value) {
 function programBox(program, shipments) {
   const box = (label, text) => `<tr><td align="center" bgcolor="${C.stat}" style="background-color:${C.stat};border:1px solid ${C.line};border-radius:10px;padding:8px 22px;font-family:${F};font-size:13px;line-height:20px;white-space:nowrap;text-align:center;color:${C.muted};"><span style="font-weight:700;color:${C.navy};">${label}:</span> ${esc(text)}</td></tr>`;
   const gap = '<tr><td height="6" style="font-size:0;line-height:0;">&nbsp;</td></tr>';
-  const rows = [program ? box('Program', program) : '', shipments ? box('Number of shipments', shipments) : ''].filter(Boolean).join(gap);
+  const rows = [program ? box('Program', program) : '', shipments ? box('No. of shipments', shipments) : ''].filter(Boolean).join(gap);
   return rows
     ? `<tr><td align="center" style="padding:4px 16px 10px;"><table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;margin:0 auto;">${rows}</table></td></tr>`
     : '';
@@ -995,10 +995,10 @@ function itemCard(it) {
     ['Program', wellness ? '' : (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
     ['Units available', inj ? it.weeksPerMl : ''],
     ['Supplies requested', wellness ? '' : it.supplies],
-    // row 2: Administration | Frequency | Number of shipments
+    // row 2: Administration | Frequency | No. of shipments
     ['Administration', wellness ? '' : it.admin],
     ['Frequency', wellness ? '' : it.freq],
-    ['Number of shipments', wellness ? '' : it.shipments]
+    ['No. of shipments', wellness ? '' : it.shipments]
   ].filter(([, v]) => v !== '' && v != null);
   let rows = '';
   for (let i = 0; i < stats.length; i += 3) {
@@ -1038,7 +1038,7 @@ function shipmentsBar(value) {
   return `<tr><td style="padding:0 30px 10px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.hl}" style="border-collapse:separate;background-color:${C.hl};border:1px solid ${C.hlLine};border-radius:14px;box-shadow:inset 0 1px 0 #ffffff;">
 <tr>
-<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">Number of shipments</td>
+<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">No. of shipments</td>
 <td align="right" style="padding:14px 20px;font-family:${F};font-size:22px;line-height:26px;font-weight:800;color:${C.navy};">${esc(value)}</td>
 </tr></table></td></tr>`;
 }
