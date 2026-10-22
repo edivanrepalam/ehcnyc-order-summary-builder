@@ -1012,9 +1012,13 @@ function itemCard(it) {
     it.benefit ? pill(esc(it.benefit), '#e9f0f3', C.navy, '#d3e0e5') : '',
     tagPill(it.tag)
   ].join('');
+  // Owed Medication sits on top, the note underneath. When the order has owed medication (and isn't on hold),
+  // the note is the patient's instruction for requesting it; hold explanations and other orders keep "Comments".
+  const onHold = it.status === HOLD_STATUS;
+  const noteLabel = it.medOwed === 'Yes' && !onHold ? 'To request your owed medication' : 'Comments';
   const notes = (wellness ? programBox(it.program, it.shipments) + noteLine('Directions for use', it.directions) : '')
-    + noteLine('Comments', it.comments, it.status === HOLD_STATUS)
-    + (it.medOwed === 'Yes' ? owedLine('Owed Medication', it.owedMed) : '');
+    + (it.medOwed === 'Yes' ? owedLine('Owed Medication', it.owedMed) : '')
+    + noteLine(noteLabel, it.comments, onHold);
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-left:4px solid ${C.blue};border-radius:14px;margin:0 0 10px 0;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
 <tr><td style="padding:14px 16px ${pills ? 0 : 6}px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
