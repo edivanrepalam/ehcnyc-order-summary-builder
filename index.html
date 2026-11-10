@@ -132,10 +132,6 @@ button{font:inherit}
 .field input.calc:focus{box-shadow:0 0 0 3px rgba(139,203,221,.35)}
 .field.hl label{color:var(--accent)}
 .field.hl input{background:rgba(139,203,221,.32);border-color:rgba(42,142,168,.55);font-weight:700}
-/* Owed Medication stands out with a light blue highlight */
-.field.owed-field label{color:var(--accent);font-weight:700}
-.field.owed-field input{background:rgba(139,203,221,.4);border-color:rgba(42,142,168,.6);font-weight:600}
-.field.owed-field input::placeholder{color:rgba(42,100,120,.6);font-weight:500}
 /* product block: accent edge as inset shadow so dropdown menus aren't clipped */
 .item{overflow:visible;padding-bottom:22px;box-shadow:inset 4px 0 0 #6fbdd2,0 4px 18px rgba(9,46,57,.06)}
 .item::before{display:none}
@@ -145,11 +141,7 @@ button{font:inherit}
 .sub-head.first{margin-top:4px;padding-top:0;border-top:0}
 /* Keep supplies on the third row of the product grid. */
 .item .supplies-field{grid-column:1}
-/* Wellness products show Benefits, so Supplies requested + Medication Owed? sit beside # of units available */
-.item.wellness .supplies-field{grid-column:auto}
 .field[hidden]{display:none}
-/* Wellness & Vitality products do not use these fields */
-.item.wellness .wl-hide{display:none}
 /* Editable units dropdown: always show the full list. */
 .card.units-open{position:relative;z-index:7}
 .units-combo{position:relative}
@@ -180,7 +172,6 @@ button{font:inherit}
 .link-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) auto;gap:12px;align-items:end;margin-top:16px}
 .link-row .icon-btn{margin-bottom:3px}
 @media (max-width:640px){.link-row{grid-template-columns:1fr}}
-#guideLinks:not([hidden]) + .grid{margin-top:18px}
 </style>
 </head>
 <body>
@@ -232,15 +223,11 @@ button{font:inherit}
 
     <div class="card glass">
       <div class="card-head"><h2>Links</h2></div>
-      <div id="guideLinks" hidden>
-        <div class="sub-head first">Patient guide <span style="font-weight:500;color:#8aa0aa">(added from the product you selected)</span></div>
-        <div id="guideRows"></div>
-        <p class="help">Leave a link blank to hide that guide button.</p>
-      </div>
-      <div class="grid" id="linkGrid">
-        <div class="field span-3"><label>How to Inject (Step by Step)</label><input data-k="injectionUrl" type="url" data-default="injectionGuideUrl" placeholder="https://"></div>
+      <div class="grid">
+        <div class="field span-3"><label>Request a Refill</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
         <div class="field span-3"><label>View your dose in # of units here!</label><input data-k="doseUrl" type="url" data-default="doseGuideUrl" placeholder="https://">
           <p class="help">Leave blank to hide this button.</p></div>
+        <div class="field span-3"><label>How to Inject (Step by Step)</label><input data-k="injectionUrl" type="url" data-default="injectionGuideUrl" placeholder="https://"></div>
         <div class="field span-3"><label>Dosing Conversion</label><input data-k="dosingUrl" type="url" data-default="dosingConversionUrl" placeholder="https://"></div>
         <div class="field span-3"><label># Of Weeks For Treatment (Weight Loss Meds.)</label><input data-k="weeksUrl" type="url" data-default="weeksOfTreatmentUrl" placeholder="https://"></div>
       </div>
@@ -249,8 +236,6 @@ button{font:inherit}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         Add another link
       </button>
-      <div class="sub-head">Request a Refill Here <span style="font-weight:500;color:#8aa0aa">(always the last button, set apart from the others)</span></div>
-      <div class="field"><label>Request a Refill Here link</label><input data-k="refillUrl" type="url" data-default="refillUrl" placeholder="https://"></div>
     </div>
 
     <div class="card glass">
@@ -322,9 +307,8 @@ button{font:inherit}
       <div class="field"><label>Medication / Product <span class="req">*</span></label><select data-f="med"></select></div>
       <div class="field"><label>Form</label><select data-f="type"></select></div>
       <div class="field"><label class="prog-label">Program (mL / mg)</label><select data-f="program"></select></div>
-      <div class="field benefit-field" hidden><label>Benefits</label><select data-f="benefit"></select></div>
-      <div class="field admin-field wl-hide"><label>Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous"></div>
-      <div class="field wl-hide"><label>Frequency</label><select data-f="freq"></select></div>
+      <div class="field"><label>Frequency</label><select data-f="freq"></select></div>
+      <div class="field admin-field"><label>Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous"></div>
       <div class="field wpm-field"><label># of units available</label>
         <div class="units-combo">
           <input data-f="weeksPerMl" type="text" role="combobox" aria-autocomplete="none" aria-haspopup="listbox" aria-expanded="false" placeholder="Select or type units" autocomplete="off" disabled>
@@ -332,13 +316,12 @@ button{font:inherit}
           <div class="units-menu glass" role="listbox" aria-label="Units available" hidden></div>
         </div>
       </div>
-      <div class="field supplies-field wl-hide"><label>Supplies requested</label><select data-f="supplies"></select></div>
+      <div class="field supplies-field"><label>Supplies requested</label><select data-f="supplies"></select></div>
       <div class="field"><label>Medication Owed?</label><select data-f="medOwed"></select></div>
       <!--<div class="field"><label>Vials (mL) being shipped</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
       <div class="field"><label>#mLs OWED</label><input data-f="owed" type="number" min="0" placeholder="0"></div>-->
-      <div class="field span-3 directions-field" hidden><label>Directions for use</label><input data-f="directions" placeholder="e.g. Take 2 capsules daily with food"></div>
-      <div class="field span-3 owed-field" hidden><label>Owed Medication</label><input data-f="owedMed" placeholder="Shipment #2, #3, etc."></div>
       <div class="field span-3"><label>Comments<span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="N/A"></div>
+      <div class="field span-3 owed-field" hidden><label style="color: purple;">Owed Medication</label><input data-f="owedMed" placeholder="Describe the medication owed"></div>
     </div>
 
 </template>
@@ -353,16 +336,6 @@ button{font:inherit}
   </div>
 </template>
 
-<template id="guideTpl">
-  <div class="link-row guide-row">
-    <div class="field"><label>Button text</label><input data-g="text"></div>
-    <div class="field"><label>Link</label><input data-g="url" type="url" placeholder="https://"></div>
-    <button type="button" class="icon-btn" data-act="restore-guide" title="Restore the default" aria-label="Restore the default guide button">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-    </button>
-  </div>
-</template>
-
 <div class="toast glass" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -373,16 +346,7 @@ button{font:inherit}
    - form auto-fills the Form field; tag shows as a pill in the email
    ============================================================ */
 const FRIDGE = 'Keep refrigerated';
-const COOL_DRY = 'Store in a cool, dry place (away from heat, moisture & sunlight).';
 const HOLD_STATUS = 'On hold - see comments above';
-// Patient Guide buttons. A product with a `guide` below shows that button in the email by default.
-const GUIDE = {
-  tirzepatideGlycineB12: { text: 'Tirzepatide/Glycine/B12 Patient Guide', url: 'https://canva.link/tirzepatide-glycine-b12-guide' },
-  semaglutideGlycineB12: { text: 'Semaglutide/Glycine/B12 Patient Guide', url: 'https://canva.link/semaglutide-glycine-b12-guide' },
-  semaglutideFlexDose:   { text: 'Semaglutide Flex-Dose Patient Guide',   url: 'https://canva.link/semaglutide-flex-dose-guide' },
-  tirzepatideFlexDose:   { text: 'Tirzepatide Flex-Dose Patient Guide',   url: 'https://canva.link/tirzepatide-flex-dose-guide' },
-  sermorelin:            { text: 'Sermorelin Patient Guide',              url: 'https://canva.link/ehcnyc-sermorelin' }
-};
 const CONFIG = {
   clinicName: 'Elite Health Center NYC',
   tagline: "New York's Premier Online Weight Loss Clinic.",
@@ -393,27 +357,24 @@ const CONFIG = {
   injectionGuideUrl: 'https://drive.google.com/file/d/1nzs1cHDSPBIJfhMJLHbhCyjDbXiUL9Lw/view',
   dosingConversionUrl: 'https://canva.link/8qqqc9xz5ayqxl9',
   weeksOfTreatmentUrl: 'https://canva.link/number-of-weeks-of-treatment',
-  refillButton: { text: 'Request a Refill Here', color: '#FFEE8C', border: '#F0DB6A', shadow: 'rgba(196,166,20,0.28)' },
   processingTime: 'Up to 10 business days',
   catalog: [
     { group: 'Weight loss', items: [
-      { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy', guide: GUIDE.tirzepatideGlycineB12,
-        programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '12mL-120mg'] },
-      { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy', guide: GUIDE.semaglutideGlycineB12,
+      { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy',
+        programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '8mL-80mg', '9mL-90mg', '12mL-120mg'] },
+      { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy',
         programs: ['0.5mL-2.5mg', '1mL-5mg', '3mL-15mg', '4mL-20mg'] },
-      { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy', guide: GUIDE.tirzepatideFlexDose,
+      { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
         programs: ['1mL-10mg', '3mL-30mg', '4mL-40mg', '5mL-50mg', '6mL-60mg', '10mL-100mg', '4mL-60mg (15mg/mL)'] },
-      { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy', guide: GUIDE.semaglutideFlexDose,
+      { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
         programs: ['1mL-2.5mg', '2mL-5mg', '3mL-7.5mg', '3mL-15mg (5mg/mL)', '5mL-12.5mg', '10mL-25mg'] },
-      { name: 'Compounded Tirzepatide Flex-Dose Forte', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
-        programs: ['4mL - 60mg (15mg/mL)'] },
       { name: 'Compounded Tirzepatide ODT', form: 'Tablets', pharmacy: 'Vios Compounding Pharmacy',
         programs: ['3mg', '4mg', '5mg', '6mg', '7mg', '8mg', '10mg', '12mg'] },
       { name: 'Compounded Semaglutide ODT', form: 'Tablets', pharmacy: 'Vios Compounding Pharmacy',
         programs: ['2mg', '4mg', '6mg', '8mg', '10mg', '12mg'] }
     ]},
     { group: 'Sermorelin', pharmacy: 'Hallandale Pharmacy', items: [
-      { name: 'Sermorelin (injectable)', form: 'Injectable', tag: FRIDGE, guide: GUIDE.sermorelin,
+      { name: 'Sermorelin (injectable)', form: 'Injectable', tag: FRIDGE,
         programs: ['6mL', '12mL'] },
       { name: 'Sermorelin (troches)', form: 'Troches',
         programs: ['400mcg, 30ct.', '400mcg, 60ct.', '600mcg, 30ct.', '600mcg, 60ct.'] }
@@ -432,37 +393,37 @@ const CONFIG = {
         { label: '5mL (10mg/mL)', pharmacy: 'Striker Pharmacy' }] },
       { name: 'Glow: GHK-Cu, BPC-157 & TB-500', form: 'Injectable', tag: FRIDGE, programs: [
         { label: '3mL (9mg/1.66mg/3.33mg/mL)', pharmacy: 'Striker Pharmacy' }] },
-      { name: 'Bioboost Plus', form: 'Injectable', tag: COOL_DRY, programs: [
+      { name: 'Bioboost Plus', form: 'Injectable', tag: FRIDGE, programs: [
         { label: '10mL', pharmacy: 'Hallandale Pharmacy' },
         { label: '30mL', pharmacy: 'Hallandale Pharmacy' }] },
       { name: 'MICB12', form: 'Gel Troches', programs: ['30 troches'] }
     ]},
     { group: 'Wellness & Vitality Collection', pharmacy: 'Strive Pharmacy', items: [
-      { name: 'Fuel+', form: 'Meal Replacement Shake', programs: ['30 servings (10-15 days supply)'], benefit: 'Salted Caramel Flavor' },
-      { name: 'Digest', form: 'Veggie Capsules', programs: ['30 ct.'], benefit: 'Gut Health Support' },
-      { name: 'Control', form: 'Veggie Capsules', programs: ['30 ct.'], benefit: 'Appetite Support' },
-      { name: 'Regen+', form: 'Veggie Capsules', programs: ['60 ct.'], benefit: 'Promotes NAD+, Boost Energy & Promotes Anti-Aging' },
-      { name: 'Slumber', form: 'Veggie Capsules', programs: ['90 ct.'], benefit: 'Deep Sleep Support' },
-      { name: 'Restore', form: 'Veggie Capsules', programs: ['90 ct.'], benefit: 'Sleep & Calm Support' },
-      { name: 'Shield', form: 'Veggie Capsules', programs: ['60 ct.'], benefit: 'Daily Immune Booster' },
-      { name: 'Daily', form: 'Veggie Capsules', programs: ['60 ct.'], benefit: 'Multi Vitamin & Metabolism Boost' },
-      { name: 'Balance', form: 'Veggie Capsules', programs: ['60 ct.'], benefit: 'Hormone Support for Women' },
-      { name: 'Boost', form: 'Veggie Capsules', programs: ['90 ct.'], benefit: 'Testosterone Support for Men' },
-      { name: 'Grow', form: 'Veggie Capsules', programs: ['90 ct.'], benefit: 'Hair, Skin, & Nails' },
+      { name: 'Fuel+', form: 'Meal Replacement', programs: ['30 servings'] },
+      { name: 'Digest', form: 'Veggie Capsules', programs: ['30 ct.'] },
+      { name: 'Control', form: 'Veggie Capsules', programs: ['30 ct.'] },
+      { name: 'Regen+', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Slumber', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Restore', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Shield', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Daily', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Balance', form: 'Veggie Capsules', programs: ['60 ct.'] },
+      { name: 'Boost', form: 'Veggie Capsules', programs: ['90 ct.'] },
+      { name: 'Grow', form: 'Veggie Capsules', programs: ['90 ct.'] },
       { name: 'Clear Protein Hydration', form: 'Powder', programs: ['30 servings, Coconut Mojito'] },
-      { name: 'CreatinePowerline', form: 'Powder', programs: ['60 servings, Unflavored'], benefit: 'Support Hydration Balance & Lean Muscles, Boost Cellular Energy & Promotes Cognitive Performance' }
+      { name: 'CreatinePowerline', form: 'Powder', programs: ['60 servings, Unflavored'] }
     ]}
   ],
-  forms: ['Injectable', 'Tablets', 'Troches', 'Gel Troches', 'Veggie Capsules', 'Meal Replacement Shake', 'Powder'],
-  frequencies: ['Once a week', 'Twice a week', 'Once every 10 days', 'Once every 2 weeks', 'Once daily', 'Every other day'],
-supplies: ['Syringes', 'Alcohol swabs', 'Syringes + Alcohol swabs', 'Sharps container' , 'Syringes + Sharps container', 'Alcohol swabs + Sharps container' , 'Syringes + Alcohol swabs + Sharps container' , 'N/A'],
+  forms: ['Injectable', 'Tablets', 'Troches', 'Gel Troches', 'Veggie Capsules', 'Meal Replacement', 'Powder'],
+  frequencies: ['Once a week', 'Twice a week', 'Once every 10 days', 'Once every 2 weeks', 'Once daily'],
+  supplies: ['Syringes', 'Alcohol swabs', 'Syringes + alcohol swabs', 'N/A'],
   orderStatuses: [        // bg / text colors for the status pill in the email
     { label: 'Processing', bg: '#e1f2f7', fg: '#1f7489' },
     { label: HOLD_STATUS, bg: '#fdf1dc', fg: '#c62828' }
   ],
   requestedVia: ['Refill Form', 'Website', 'Phone', 'Text', 'Email'],
   pharmacies: ['Hallandale Pharmacy', 'Strive Pharmacy', 'Vios Compounding Pharmacy', 'The Chemist Shop', 'Wells Pharmacy', 'Striker Pharmacy'],
-  shippingMethods: ['FedEx', 'UPS cold-pack', 'FedEx cold-pack', 'USPS'],
+  shippingMethods: ['FedEx', 'UPS cold-pack', 'FedEx cold-pack'],
   signatureTypes: ['No signature', 'Direct signature', 'Indirect signature'],
   // fields a new product copies from the product above it
   inheritFields: ['orderDate', 'status', 'processing', 'clearedUntil', 'shipMethod'],
@@ -487,8 +448,6 @@ const PRODUCTS = CONFIG.catalog.flatMap(g => g.items.map(p => ({
   programs: p.programs.map(x => (typeof x === 'string' ? { label: x } : x))
 })));
 PRODUCTS.forEach((p, i) => { p.id = String(i); });
-const WELLNESS_GROUP = 'Wellness & Vitality Collection';
-const BENEFITS = [...new Set(PRODUCTS.map(p => p.benefit).filter(Boolean))];
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -538,43 +497,6 @@ $('#extraLinks').addEventListener('click', e => {
   render();
 });
 
-/* ---------- patient guide buttons (default for the selected product) ---------- */
-function guideRow(g) {
-  const node = $('#guideTpl').content.firstElementChild.cloneNode(true);
-  node.dataset.key = g.url;
-  $('[data-g=text]', node).value = g.text;
-  $('[data-g=url]', node).value = g.url;
-  return node;
-}
-// One row per distinct guide among the products in the order, in the order the products appear.
-// A row the person already edited (or blanked to hide it) is kept while its product stays in the order.
-function syncGuides() {
-  const wanted = [];
-  $$('#items .item').forEach(n => {
-    const p = PRODUCTS[$('[data-f=med]', n).value];
-    if (p && p.guide && !wanted.some(g => g.url === p.guide.url)) wanted.push(p.guide);
-  });
-  const box = $('#guideRows');
-  const have = new Map($$('.guide-row', box).map(r => [r.dataset.key, r]));
-  have.forEach((row, key) => { if (!wanted.some(g => g.url === key)) row.remove(); });
-  wanted.forEach((g, i) => {
-    const row = have.get(g.url) || guideRow(g);
-    if (box.children[i] !== row) box.insertBefore(row, box.children[i] || null);
-  });
-  $('#guideLinks').hidden = !wanted.length;
-}
-$('#guideRows').addEventListener('click', e => {
-  const b = e.target.closest('[data-act=restore-guide]');
-  if (!b) return;
-  const row = b.closest('.guide-row');
-  const g = PRODUCTS.map(p => p.guide).find(x => x && x.url === row.dataset.key);
-  if (!g) return;
-  $('[data-g=text]', row).value = g.text;
-  $('[data-g=url]', row).value = g.url;
-  $$('.field.invalid', row).forEach(f => f.classList.remove('invalid'));
-  render();
-});
-
 /* ---------- form setup ---------- */
 function applyDefaults() {
   $$('[data-k]').forEach(el => { el.value = ''; });
@@ -582,8 +504,6 @@ function applyDefaults() {
   $$('[data-default]').forEach(el => { el.value = CONFIG[el.dataset.default] || ''; });
   $$('.field.invalid').forEach(f => f.classList.remove('invalid'));
   $('#extraLinks').innerHTML = '';
-  $('#guideRows').innerHTML = '';
-  $('#guideLinks').hidden = true;
   const via = $('#viaMulti');
   $('.multi-menu', via).innerHTML = CONFIG.requestedVia.map(v =>
     `<label class="multi-opt"><input type="checkbox" value="${esc(v)}"><span>${esc(v)}</span></label>`).join('');
@@ -627,7 +547,6 @@ function addItem(data = {}) {
   fillSelect($('[data-f=type]', node), CONFIG.forms, 'Select');
   fillSelect($('[data-f=freq]', node), CONFIG.frequencies, 'Select');
   fillSelect($('[data-f=supplies]', node), CONFIG.supplies, 'Select');
-  fillSelect($('[data-f=benefit]', node), BENEFITS, 'Select');
   fillSelect($('[data-f=medOwed]', node), ['No', 'Yes']);
   fillSelect($('[data-f=status]', node), CONFIG.statusLabels, 'Select');
   fillSelect($('[data-f=pharmacy]', node), CONFIG.pharmacies, 'Select');
@@ -641,7 +560,6 @@ function addItem(data = {}) {
   setValues(node, data);
 
   $('#items').appendChild(node);
-  syncGuides();
   renumber();
   render();
   return node;
@@ -832,13 +750,6 @@ function syncProduct(node) {
   const shared = p ? [...new Set(p.programs.map(x => x.pharmacy).filter(Boolean))] : [];
   $('[data-f=pharmacy]', node).value = p ? (p.pharmacy || (shared.length === 1 ? shared[0] : '')) : '';
   if (p && p.programs.length === 1) syncProgram(node);
-  const wellness = !!p && p.group === WELLNESS_GROUP;
-  $('.benefit-field', node).hidden = !wellness;
-  node.classList.toggle('wellness', wellness);
-  $('[data-f=benefit]', node).value = wellness ? (p.benefit || '') : '';
-  $('.directions-field', node).hidden = !wellness;
-  if (wellness) ['freq', 'admin', 'supplies'].forEach(k => { $(`[data-f=${k}]`, node).value = ''; });
-  else $('[data-f=directions]', node).value = '';
 }
 
 // Program changed: some programs (e.g. NAD+) ship from a specific pharmacy
@@ -880,10 +791,6 @@ function readState() {
     text: $('[data-l=text]', r).value.trim(),
     url: $('[data-l=url]', r).value.trim()
   })).filter(l => l.text && safeUrl(l.url));
-  s.guides = $$('#guideRows .guide-row').map(r => ({
-    text: $('[data-g=text]', r).value.trim(),
-    url: $('[data-g=url]', r).value.trim()
-  })).filter(g => g.text && safeUrl(g.url));
   s.items = $$('#items .item').map(n => {
     const o = readItem(n);
     const p = PRODUCTS[o.med];
@@ -902,8 +809,7 @@ const F = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 const C = {
   navy: '#092e39', blue: '#8bcbdd', accent: '#2a8ea8', accentDark: '#1f7489', pill: '#e1f2f7',
   ink: '#12303a', muted: '#5d7682', line: '#dcecf1', panel: '#f3f9fb', stat: '#eef7fa',
-  page: '#e3f0f5', card: '#fbfdfe', hl: '#dff1f6', hlLine: '#b9e1ec', danger: '#c62828',
-  banana: '#fffec5'
+  page: '#e3f0f5', card: '#fbfdfe', hl: '#dff1f6', hlLine: '#b9e1ec', danger: '#c62828'
 };
 
 function heading(text, right = '') {
@@ -939,17 +845,8 @@ function kvPanel(rows) {
   }).join(''));
 }
 
-function pill(text, bg, fg, border, wrap = false) {
-  // wrap = long text (storage note): may break onto a second line, softer corners so it never looks like a stretched capsule
-  const shape = wrap ? 'white-space:normal;border-radius:12px;' : 'white-space:nowrap;border-radius:999px;';
-  return `<span style="display:inline-block;${shape}margin:6px 6px 0 0;padding:3px 10px;background-color:${bg};border:1px solid ${border};font-family:${F};font-size:11px;line-height:16px;font-weight:700;color:${fg};">${text}</span>`;
-}
-
-// Storage tag pill: refrigerated keeps the teal snowflake pill; the cool/dry note is sage green with no icon.
-function tagPill(tag) {
-  if (!tag) return '';
-  if (tag === COOL_DRY) return pill(esc(tag), '#e6f3e8', '#27613a', '#c4e0c9', true);
-  return pill(`&#10052; ${esc(tag)}`, C.pill, C.accentDark, '#cde8f0');
+function pill(text, bg, fg, border) {
+  return `<span style="display:inline-block;margin:6px 6px 0 0;padding:3px 10px;border-radius:999px;background-color:${bg};border:1px solid ${border};font-family:${F};font-size:11px;line-height:16px;font-weight:700;color:${fg};">${text}</span>`;
 }
 
 function statusPill(label) {
@@ -965,40 +862,24 @@ function stat(label, value) {
 </td>`;
 }
 
-function programBox(program, shipments) {
-  const box = (label, text) => `<tr><td align="center" bgcolor="${C.stat}" style="background-color:${C.stat};border:1px solid ${C.line};border-radius:10px;padding:8px 22px;font-family:${F};font-size:13px;line-height:20px;white-space:nowrap;text-align:center;color:${C.muted};"><span style="font-weight:700;color:${C.navy};">${label}:</span> ${esc(text)}</td></tr>`;
-  const gap = '<tr><td height="6" style="font-size:0;line-height:0;">&nbsp;</td></tr>';
-  const rows = [program ? box('Program', program) : '', shipments ? box('No. of shipments', shipments) : ''].filter(Boolean).join(gap);
-  return rows
-    ? `<tr><td align="center" style="padding:4px 16px 10px;"><table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;margin:0 auto;">${rows}</table></td></tr>`
-    : '';
-}
 function noteLine(label, text, alert = false) {
   return text
     ? `<tr><td style="padding:0 16px 10px;font-family:${F};font-size:13px;line-height:19px;color:${alert ? C.danger : C.muted};"><span style="font-weight:700;color:${C.navy};">${esc(label)}:</span> ${esc(text)}</td></tr>`
     : '';
 }
 
-// Owed Medication: banana yellow highlight. Nested table keeps the color inside the card padding (Gmail-safe: bgcolor + inline style).
-function owedLine(label, text) {
-  return text
-    ? `<tr><td style="padding:0 16px 10px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.banana}" style="border-collapse:separate;background-color:${C.banana};border-radius:10px;"><tr><td style="padding:8px 12px;font-family:${F};font-size:13px;line-height:19px;color:${C.ink};"><span style="font-weight:700;color:${C.navy};">${esc(label)}:</span> ${esc(text)}</td></tr></table></td></tr>`
-    : '';
-}
-
 function itemCard(it) {
   const inj = it.type === 'Injectable';
-  const wellness = (PRODUCTS[it.med] || {}).group === WELLNESS_GROUP;   // Benefits pill + one-line Program
   const orderTotal = fmtMoney(it.total || '');
   const stats = [
     // row 1: Program | Units available | Supplies requested
-    ['Program', wellness ? '' : (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
+    ['Program', (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
     ['Units available', inj ? it.weeksPerMl : ''],
-    ['Supplies requested', wellness ? '' : it.supplies],
-    // row 2: Administration | Frequency | No. of shipments
-    ['Administration', wellness ? '' : it.admin],
-    ['Frequency', wellness ? '' : it.freq],
-    ['No. of shipments', wellness ? '' : it.shipments]
+    ['Supplies requested', it.supplies],
+    // row 2: Administration | Frequency | Number of shipments
+    ['Administration', it.admin],
+    ['Frequency', it.freq],
+    ['Number of shipments', it.shipments]
   ].filter(([, v]) => v !== '' && v != null);
   let rows = '';
   for (let i = 0; i < stats.length; i += 3) {
@@ -1009,21 +890,15 @@ function itemCard(it) {
   }
   const pills = [
     it.type ? pill(esc(it.type), '#e9f0f3', C.navy, '#d3e0e5') : '',
-    it.benefit ? pill(esc(it.benefit), '#e9f0f3', C.navy, '#d3e0e5') : '',
-    tagPill(it.tag)
+    it.tag ? pill(`&#10052; ${esc(it.tag)}`, C.pill, C.accentDark, '#cde8f0') : ''
   ].join('');
-  // Owed Medication sits on top, the note underneath. When the order has owed medication (and isn't on hold),
-  // the note is the patient's instruction for requesting it; hold explanations and other orders keep "Comments".
-  const onHold = it.status === HOLD_STATUS;
-  const noteLabel = it.medOwed === 'Yes' && !onHold ? 'To request your owed medication' : 'Comments';
-  const notes = (wellness ? programBox(it.program, it.shipments) + noteLine('Directions for use', it.directions) : '')
-    + (it.medOwed === 'Yes' ? owedLine('Owed Medication', it.owedMed) : '')
-    + noteLine(noteLabel, it.comments, onHold);
+  const notes = noteLine('Comments', it.comments, it.status === HOLD_STATUS)
+    + (it.medOwed === 'Yes' ? noteLine('Owed Medication', it.owedMed) : '');
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;background-color:#ffffff;border:1px solid ${C.line};border-left:4px solid ${C.blue};border-radius:14px;margin:0 0 10px 0;box-shadow:0 6px 18px rgba(9,46,57,0.06);">
-<tr><td style="padding:14px 16px ${pills ? 0 : 6}px;">
+<tr><td style="padding:14px 16px 6px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
 <td valign="top">
-<div style="font-family:${F};font-size:15px;line-height:21px;font-weight:700;color:${C.navy};">${esc(it.name)}</div>
+<div style="font-family:${F};font-size:15px;line-height:21px;font-weight:700;color:${C.navy};">${esc(it.name)}</div>${pills ? `<div>${pills}</div>` : ''}
 </td>
 ${orderTotal ? `<td valign="top" align="right" style="padding-left:12px;white-space:nowrap;">
 <div style="font-family:${F};font-size:11px;line-height:14px;font-weight:600;color:${C.muted};">Order total</div>
@@ -1031,8 +906,7 @@ ${orderTotal ? `<td valign="top" align="right" style="padding-left:12px;white-sp
 </td>` : ''}
 </tr></table>
 </td></tr>
-${pills ? `<tr><td style="padding:0 16px 6px;">${pills}</td></tr>` : ''}
-${rows ? `<tr><td style="padding:2px 10px ${notes ? 4 : 10}px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="6" border="0" style="border-collapse:separate;">${rows}</table></td></tr>` : spacer(6)}
+<tr><td style="padding:2px 10px ${notes ? 4 : 10}px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="6" border="0" style="border-collapse:separate;">${rows}</table></td></tr>
 ${notes}${notes ? spacer(4) : ''}
 </table>`;
 }
@@ -1042,7 +916,7 @@ function shipmentsBar(value) {
   return `<tr><td style="padding:0 30px 10px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.hl}" style="border-collapse:separate;background-color:${C.hl};border:1px solid ${C.hlLine};border-radius:14px;box-shadow:inset 0 1px 0 #ffffff;">
 <tr>
-<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">No. of shipments</td>
+<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">Number of shipments</td>
 <td align="right" style="padding:14px 20px;font-family:${F};font-size:22px;line-height:26px;font-weight:800;color:${C.navy};">${esc(value)}</td>
 </tr></table></td></tr>`;
 }
@@ -1062,7 +936,7 @@ function totalBar(amount, label, strong) {
 }
 
 function orderSection(it, i, n) {
-  const carrier = /^fedex/i.test(it.shipMethod) ? 'FedEx' : /^usps/i.test(it.shipMethod) ? 'USPS' : 'UPS';
+  const carrier = /^fedex/i.test(it.shipMethod) ? 'FedEx' : 'UPS';
   const title = it.orderNo ? `Order #${it.orderNo}` : (n > 1 ? `Order ${i + 1}` : 'Your order');
   const divider = i > 0
     ? `<tr><td style="padding:30px 30px 0;"><div style="border-top:2px dashed #cfe3ea;font-size:0;line-height:0;">&nbsp;</div></td></tr>`
@@ -1086,11 +960,9 @@ ${kvPanel([
 }
 
 // filled = light blue like Request a Refill; otherwise white with a blue border
-function button(url, text, filled = true, custom = null) {
-  const bg = custom ? custom.color : filled ? C.blue : '#ffffff';
-  const style = custom
-    ? `background-color:${bg};border:1px solid ${custom.border};box-shadow:0 8px 20px ${custom.shadow};`
-    : filled
+function button(url, text, filled = true) {
+  const bg = filled ? C.blue : '#ffffff';
+  const style = filled
     ? `background-color:${bg};background-image:linear-gradient(135deg,#a9dae8 0%,${C.blue} 100%);border:1px solid ${C.hlLine};box-shadow:0 8px 20px rgba(42,142,168,0.25);`
     : `background-color:${bg};border:1.5px solid ${C.blue};`;
   return `<tr><td align="center" style="padding:0 30px 12px;">
@@ -1171,20 +1043,17 @@ function buildEmailBody(s) {
     ? heading('Comments') + panel(`<tr><td style="padding:14px 16px;font-family:${F};font-size:14px;line-height:21px;color:${C.ink};">${nl2br(s.comments)}</td></tr>`)
     : '';
 
-  // order: patient guide(s), How to Inject, View your dose, Dosing Conversion, # Of Weeks, any custom links;
-  // they alternate filled / outlined (skipping any left blank). Request a Refill comes last, set apart by extra space.
-  const group = [
-    ...s.guides.map(g => [g.url, g.text]),
-    [s.injectionUrl, 'How to Inject (Step by Step)'],
+  // buttons alternate: filled, outlined, filled, outlined... (skipping any left blank)
+  const buttons = [
+    [s.refillUrl, 'Request a Refill'],
     [s.doseUrl, 'View your dose in # of units here!'],
+    [s.injectionUrl, 'How to Inject (Step by Step)'],
     [s.dosingUrl, 'Dosing Conversion'],
     [s.weeksUrl, '# Of Weeks For Treatment (Weight Loss Meds.)'],
     ...s.links.map(l => [l.url, l.text])
   ].filter(([url]) => safeUrl(url))
    .map(([url, text], i) => button(url, text, i % 2 === 0))
    .join('');
-  const refill = safeUrl(s.refillUrl) ? (group ? spacer(28) : '') + button(s.refillUrl, CONFIG.refillButton.text, true, CONFIG.refillButton) : '';
-  const buttons = group + refill;
   const links = buttons ? spacer(28) + buttons : '';
 
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.page}" style="background-color:${C.page};background-image:linear-gradient(160deg,#d3eaf2 0%,#eef6f9 45%,#d8e9ef 100%);">
@@ -1253,7 +1122,6 @@ frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="vie
 function render() {
   cancelAnimationFrame(raf);
   raf = requestAnimationFrame(() => {
-    syncGuides();
     $$('#items .item').forEach(n => {
       const badge = $('.ph-badge', n), ph = $('[data-f=pharmacy]', n).value;
       badge.textContent = ph; badge.hidden = !ph;
@@ -1302,12 +1170,6 @@ function validate() {
     if (!order.value.trim()) flag(order, 'order #' + which);
   });
   missingHoldComments().forEach(({ input, label }) => flag(input, label));
-  $$('#guideRows .guide-row').forEach(r => {
-    const t = $('[data-g=text]', r), u = $('[data-g=url]', r);
-    if (!u.value.trim()) return;                       // a blank link hides the button
-    if (!safeUrl(u.value.trim())) flag(u, 'full https link for the patient guide');
-    else if (!t.value.trim()) flag(t, 'button text for the patient guide');
-  });
   $$('#extraLinks .link-row').forEach(r => {
     const t = $('[data-l=text]', r), u = $('[data-l=url]', r);
     if (!t.value.trim() && !u.value.trim()) return;
@@ -1436,7 +1298,6 @@ $('#items').addEventListener('click', e => {
     item.remove();
     if (only) addItem();
   }
-  syncGuides();
   renumber();
   render();
 });
@@ -1451,7 +1312,7 @@ formCol.addEventListener('input', e => {
 });
 formCol.addEventListener('change', e => {
   const node = e.target.closest('.item');
-  if (e.target.dataset.f === 'med') { syncProduct(node); syncGuides(); }
+  if (e.target.dataset.f === 'med') syncProduct(node);
   if (e.target.dataset.f === 'program') syncProgram(node);
   if (e.target.dataset.f === 'type') syncType(node);
   if (e.target.dataset.f === 'medOwed') syncOwed(node);
