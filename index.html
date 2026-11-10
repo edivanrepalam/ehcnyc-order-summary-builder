@@ -78,7 +78,7 @@ button{font:inherit}
 .field input:focus,.field select:focus,.field textarea:focus{background-color:rgba(255,255,255,.9);border-color:var(--accent);box-shadow:0 0 0 4px rgba(139,203,221,.45)}
 .field input::placeholder,.field textarea::placeholder{color:#93a7b0}
 .field input:disabled,.field select:disabled{opacity:.4;cursor:not-allowed}
-.field.invalid input,.field.invalid select{border-color:var(--danger);box-shadow:0 0 0 3px rgba(194,65,59,.15)}
+.field.invalid input,.field.invalid select,.field.invalid textarea,.field.invalid .multi-btn{border-color:var(--danger);box-shadow:0 0 0 3px rgba(194,65,59,.15)}
 .money{position:relative}
 .money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14.5px;pointer-events:none}
 .money input{padding-left:28px}
@@ -126,6 +126,7 @@ button{font:inherit}
 @media (max-width:640px){.span-2{grid-column:auto}}
 .help.center{text-align:center;margin-top:10px}
 .field label .sub{font-weight:500;color:#8aa0aa}
+.field label.required-label::after{content:' *';color:var(--danger)}
 .field label.pharmacy-label{display:flex;justify-content:flex-start;align-items:center;gap:4px}
 .field textarea.two-line{min-height:0;height:auto;resize:none}
 .field input.calc{background:rgba(139,203,221,.22);border-color:rgba(42,142,168,.3);color:var(--muted);font-weight:700;cursor:default;box-shadow:none}
@@ -195,10 +196,10 @@ button{font:inherit}
       <div class="card-head"><h2>Patient information</h2></div>
       <div class="grid">
         <div class="field"><label>Name <span class="req">*</span></label><input data-k="name" placeholder="Last, First" autocomplete="off"></div>
-        <div class="field"><label>Shipping address</label><textarea data-k="address" class="two-line" rows="2" placeholder="Street, Apt&#10;City, State ZIP"></textarea></div>
+        <div class="field"><label class="required-label">Shipping address</label><textarea data-k="address" class="two-line" rows="2" placeholder="Street, Apt&#10;City, State ZIP" required></textarea></div>
         <div class="field"><label>Instructions for courier</label><input data-k="courier" placeholder="n/a"></div>
-        <div class="field"><label>Signature at delivery</label><select data-k="signature" data-opts="signatureTypes"></select></div>
-        <div class="field"><label>Order requested via</label>
+        <div class="field"><label class="required-label">Signature at delivery</label><select data-k="signature" data-opts="signatureTypes" required></select></div>
+        <div class="field"><label class="required-label">Order requested via</label>
         <div class="multi" id="viaMulti">
           <button type="button" class="multi-btn" aria-haspopup="true" aria-expanded="false"><span class="multi-val">Select</span></button>
           <div class="multi-menu glass" role="group" aria-label="Order requested via" hidden></div>
@@ -207,7 +208,7 @@ button{font:inherit}
         <div class="field"><label>Requested dates for delivery</label><input data-k="dates" placeholder="e.g. Mon Sep 21"></div>
         <div class="field"><label>Sale / Promotion</label><input data-k="promo" placeholder="n/a"></div>
         <div class="field"><label>Discount code</label><input data-k="discount" placeholder="n/a"></div>
-        <div class="field"><label>Total</label><div class="money"><span>$</span><input data-k="totalPaid" class="calc" type="text" readonly placeholder="0.00" title="Adds up the Total from each order"></div></div>
+        <div class="field"><label>Total</label><div class="money"><span>$</span><input data-k="totalPaid" class="calc" type="text" readonly placeholder="0.00" title="Adds order totals, shipping and applicable signature fees"></div><div class="help" id="shippingFeeInfo" aria-live="polite" hidden></div><div class="help" id="signatureFeeInfo" aria-live="polite" hidden></div></div>
       </div>
     </div>
 
@@ -291,33 +292,34 @@ button{font:inherit}
 
     <div class="sub-head">Order details</div>
     <div class="grid">
-      <div class="field"><label>Order # <span class="req">*</span></label><input data-f="orderNo" placeholder="EHCNYC-0000" autocomplete="off"></div>
-      <div class="field"><label>Status of order</label><select data-f="status"></select></div>
-      <div class="field"><label>Order date</label><input data-f="orderDate" type="date"></div>
-      <div class="field"><label class="pharmacy-label">Pharmacy <span class="sub" style="color: red;">(Skip)</span></label><select data-f="pharmacy" step="0.01"></select></div>
-      <div class="field hl"><label># of shipments</label><input data-f="shipments" type="number" min="0" placeholder="e.g. 2"></div>
-      <div class="field"><label>Shipping method</label><select data-f="shipMethod"></select></div>
-      <div class="field"><label>Processing time</label><input data-f="processing"></div>
-      <div class="field"><label>Medically cleared until (Month Year)</label><input data-f="clearedUntil" type="month" placeholder="YYYY-MM"></div>
-      <div class="field"><label>Total</label><div class="money"><span>$</span><input data-f="total" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
+      <div class="field"><label>Order # <span class="req">*</span></label><input data-f="orderNo" placeholder="EHCNYC-0000" autocomplete="off" required></div>
+      <div class="field"><label class="required-label">Status of order</label><select data-f="status" required></select></div>
+      <div class="field"><label class="required-label">Order date</label><input data-f="orderDate" type="date" required></div>
+      <div class="field"><label class="pharmacy-label required-label">Pharmacy</label><select data-f="pharmacy" required></select></div>
+      <div class="field hl"><label class="required-label"># of shipments</label><input data-f="shipments" type="number" min="0" placeholder="e.g. 2" required></div>
+      <div class="field"><label class="required-label">Shipping method</label><select data-f="shipMethod" required></select></div>
+      <div class="field"><label class="required-label">Processing time</label><input data-f="processing" required></div>
+      <div class="field"><label class="required-label">Medically cleared until (Month Year)</label><input data-f="clearedUntil" type="month" placeholder="YYYY-MM" required></div>
+      <div class="field"><label class="required-label">Total</label><div class="money"><span>$</span><input data-f="total" type="number" min="0" step="0.01" placeholder="0.00" required></div></div>
     </div>
 
     <div class="sub-head first">Product</div>
     <div class="grid">
-      <div class="field"><label>Medication / Product <span class="req">*</span></label><select data-f="med"></select></div>
-      <div class="field"><label>Form</label><select data-f="type"></select></div>
-      <div class="field"><label class="prog-label">Program (mL / mg)</label><select data-f="program"></select></div>
-      <div class="field"><label>Frequency</label><select data-f="freq"></select></div>
-      <div class="field admin-field"><label>Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous"></div>
-      <div class="field wpm-field"><label># of units available</label>
+      <div class="field"><label>Medication / Product <span class="req">*</span></label><select data-f="med" required></select></div>
+      <div class="field"><label class="required-label">Form</label><select data-f="type" required></select></div>
+      <div class="field"><label class="prog-label required-label">Program (mL / mg)</label><select data-f="program" required></select></div>
+      <div class="field admin-field"><label class="required-label">Administration</label><input data-f="admin" placeholder="e.g. 25 units, subcutaneous" required></div>
+      <div class="field"><label class="required-label">Frequency</label><select data-f="freq" required></select></div>
+      <div class="field wpm-field"><label class="required-label"># of units available</label>
         <div class="units-combo">
-          <input data-f="weeksPerMl" type="text" role="combobox" aria-autocomplete="none" aria-haspopup="listbox" aria-expanded="false" placeholder="Select or type units" autocomplete="off" disabled>
+          <input data-f="weeksPerMl" type="text" role="combobox" aria-autocomplete="none" aria-haspopup="listbox" aria-expanded="false" placeholder="Select or type units" autocomplete="off" required disabled>
           <button type="button" class="units-toggle" aria-label="Show all unit options" aria-expanded="false" tabindex="-1" disabled><svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg></button>
           <div class="units-menu glass" role="listbox" aria-label="Units available" hidden></div>
         </div>
       </div>
-      <div class="field supplies-field"><label>Supplies requested</label><select data-f="supplies"></select></div>
-      <div class="field"><label>Medication Owed?</label><select data-f="medOwed"></select></div>
+      <div class="field supplies-field"><label class="required-label">Supplies requested</label><select data-f="supplies" required></select></div>
+      <div class="field"><label class="required-label">Medication Owed?</label><select data-f="medOwed" required></select></div>
+      <div class="field"><label>Duration (as per your weekly dose)</label><input data-f="duration" class="calc" type="text" readonly placeholder="Calculated from dosing schedule"></div>
       <!--<div class="field"><label>Vials (mL) being shipped</label><input data-f="ship" type="number" min="0" placeholder="e.g. 1"></div>
       <div class="field"><label>#mLs OWED</label><input data-f="owed" type="number" min="0" placeholder="0"></div>-->
       <div class="field span-3"><label>Comments<span class="req" hidden aria-hidden="true">*</span></label><input data-f="comments" placeholder="N/A"></div>
@@ -361,11 +363,11 @@ const CONFIG = {
   catalog: [
     { group: 'Weight loss', items: [
       { name: 'Compounded Tirzepatide/Glycine/B12', form: 'Injectable', tag: FRIDGE, pharmacy: 'Strive Pharmacy',
-        programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '8mL-80mg', '9mL-90mg', '12mL-120mg'] },
+        programs: ['1mL-10mg', '2mL-20mg', '4mL-40mg', '6mL-60mg', '8mL-80mg', '9mL-90mg', '12mL-120mg', '16mL-160mg'] },
       { name: 'Compounded Semaglutide/Glycine/B12', form: 'Injectable', pharmacy: 'Strive Pharmacy',
-        programs: ['0.5mL-2.5mg', '1mL-5mg', '3mL-15mg', '4mL-20mg'] },
+        programs: ['0.5mL-2.5mg', '1mL-5mg', '2mL-10mg', '3mL-15mg', '4mL-20mg'] },
       { name: 'Compounded Tirzepatide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
-        programs: ['1mL-10mg', '3mL-30mg', '4mL-40mg', '5mL-50mg', '6mL-60mg', '10mL-100mg', '4mL-60mg (15mg/mL)'] },
+        programs: ['1mL-10mg', '2mL-20mg', '3mL-30mg', '4mL-40mg', '5mL-50mg', '6mL-60mg', '10mL-100mg', '4mL-60mg (15mg/mL)'] },
       { name: 'Compounded Semaglutide Flex-Dose', form: 'Injectable', pharmacy: 'Hallandale Pharmacy',
         programs: ['1mL-2.5mg', '2mL-5mg', '3mL-7.5mg', '3mL-15mg (5mg/mL)', '5mL-12.5mg', '10mL-25mg'] },
       { name: 'Compounded Tirzepatide ODT', form: 'Tablets', pharmacy: 'Vios Compounding Pharmacy',
@@ -423,7 +425,7 @@ const CONFIG = {
   ],
   requestedVia: ['Refill Form', 'Website', 'Phone', 'Text', 'Email'],
   pharmacies: ['Hallandale Pharmacy', 'Strive Pharmacy', 'Vios Compounding Pharmacy', 'The Chemist Shop', 'Wells Pharmacy', 'Striker Pharmacy'],
-  shippingMethods: ['FedEx', 'UPS cold-pack', 'FedEx cold-pack'],
+  shippingMethods: ['FedEx', 'UPS cold-pack', 'FedEx cold-pack', 'USPS'],
   signatureTypes: ['No signature', 'Direct signature', 'Indirect signature'],
   // fields a new product copies from the product above it
   inheritFields: ['orderDate', 'status', 'processing', 'clearedUntil', 'shipMethod'],
@@ -439,6 +441,19 @@ const CONFIG = {
   confidentiality: 'The information contained in this e-mail and any attachments may be legally privileged and confidential. If you are not an intended recipient, you are hereby notified that any dissemination, distribution, or copying of this e-mail is strictly prohibited. If you have received this e-mail in error, please notify the sender and permanently delete the e-mail and any attachments immediately. You should not retain, copy or use this e-mail or any attachment for any purpose, nor disclose all or any part of the contents to any other person.'
 };
 CONFIG.statusLabels = CONFIG.orderStatuses.map(s => s.label);
+
+// Prices supplied for the listed programs; unlisted programs remain manual.
+const PROGRAM_PRICES = {
+  'Compounded Tirzepatide/Glycine/B12': { '1mL-10mg': 179, '2mL-20mg': 349, '4mL-40mg': 599, '6mL-60mg': 799, '8mL-80mg': 949, '9mL-90mg': 1249, '12mL-120mg': 1399, '16mL-160mg': 1799 },
+  'Compounded Tirzepatide Flex-Dose': { '1mL-10mg': 179, '2mL-20mg': 349, '3mL-30mg': 499, '4mL-40mg': 599, '4mL-60mg (15mg/mL)': 699, '5mL-50mg': 699, '6mL-60mg': 799, '10mL-100mg': 1299 },
+  'Compounded Semaglutide/Glycine/B12': { '1mL-5mg': 249, '2mL-10mg': 449, '3mL-15mg': 699, '4mL-20mg': 749 },
+  'Compounded Semaglutide Flex-Dose': { '1mL-2.5mg': 129, '2mL-5mg': 189, '3mL-7.5mg': 349, '5mL-12.5mg': 549, '3mL-15mg (5mg/mL)': 649, '10mL-25mg': 999 },
+  'Fuel+': { '30 servings': 59.99 }, 'Digest': { '30 ct.': 24.99 }, 'Control': { '30 ct.': 29.99 },
+  'Regen+': { '60 ct.': 99.99 }, 'Slumber': { '90 ct.': 39.99 }, 'Restore': { '90 ct.': 39.99 },
+  'Shield': { '60 ct.': 39.99 }, 'Daily': { '60 ct.': 39.99 }, 'Balance': { '60 ct.': 32.99 },
+  'Boost': { '90 ct.': 49.99 }, 'Grow': { '90 ct.': 39.99 },
+  'Clear Protein Hydration': { '30 servings, Coconut Mojito': 59.99 }, 'CreatinePowerline': { '60 servings, Unflavored': 44.99 }
+};
 
 // Flatten the catalog: one entry per product, programs normalized to {label, pharmacy}
 const PRODUCTS = CONFIG.catalog.flatMap(g => g.items.map(p => ({
@@ -582,6 +597,8 @@ function syncType(node) {
   const injectable = $('[data-f=type]', node).value === 'Injectable';
   node.classList.toggle('inj', injectable);
   $('[data-f=weeksPerMl]', node).disabled = !injectable;
+  $('.wpm-field label', node).classList.toggle('required-label', injectable);
+  if (!injectable) $('.wpm-field', node).classList.remove('invalid');
   $('.units-toggle', node).disabled = !injectable;
   if (!injectable) closeUnitsDropdown($('.units-combo', node));
 }
@@ -733,10 +750,25 @@ document.addEventListener('keydown', e => {
   if (open) { closeMenus(); $('.multi-btn', open).focus(); }
 });
 
+// Wellness products ship by USPS; other Strive orders default to UPS cold-pack.
+function syncPharmacyShipping(node) {
+  const product = PRODUCTS[$('[data-f=med]', node).value];
+  if (product && product.group === 'Wellness & Vitality Collection') {
+    $('[data-f=shipMethod]', node).value = 'USPS';
+  } else if ($('[data-f=pharmacy]', node).value === 'Strive Pharmacy') {
+    $('[data-f=shipMethod]', node).value = 'UPS cold-pack';
+  }
+}
+
 // Product changed: rebuild its Program list, auto-fill Form and Pharmacy
 function syncProduct(node) {
   const p = PRODUCTS[$('[data-f=med]', node).value];
   const prog = $('[data-f=program]', node);
+  if (p && p.group !== 'Wellness & Vitality Collection' && $('[data-f=shipMethod]', node).value === 'USPS') {
+    $('[data-f=shipMethod]', node).value = 'FedEx';
+  }
+  $('[data-f=weeksPerMl]', node).value = '';
+  $('[data-f=total]', node).value = '';
   if (p) {
     fillSelect(prog, p.programs.map(x => x.label), p.programs.length > 1 ? 'Select' : undefined);
     prog.disabled = false;
@@ -749,15 +781,27 @@ function syncProduct(node) {
   syncType(node);
   const shared = p ? [...new Set(p.programs.map(x => x.pharmacy).filter(Boolean))] : [];
   $('[data-f=pharmacy]', node).value = p ? (p.pharmacy || (shared.length === 1 ? shared[0] : '')) : '';
+  syncPharmacyShipping(node);
   if (p && p.programs.length === 1) syncProgram(node);
 }
 
-// Program changed: some programs (e.g. NAD+) ship from a specific pharmacy
-function syncProgram(node) {
+// Program changed: use 100 syringe units per mL for injectable programs.
+function syncProgram(node, updatePrice = true) {
   const p = PRODUCTS[$('[data-f=med]', node).value];
   const label = $('[data-f=program]', node).value;
   const pr = p && p.programs.find(x => x.label === label);
-  if (pr && pr.pharmacy) $('[data-f=pharmacy]', node).value = pr.pharmacy;
+  if (updatePrice) {
+    const price = p && pr && (PROGRAM_PRICES[p.name] || {})[label];
+    $('[data-f=total]', node).value = price == null ? '' : Number(price).toFixed(2);
+  }
+  if (pr && pr.pharmacy) {
+    $('[data-f=pharmacy]', node).value = pr.pharmacy;
+    syncPharmacyShipping(node);
+  }
+  const volume = pr && $('[data-f=type]', node).value === 'Injectable'
+    ? label.match(/^\s*(\d+(?:\.\d+)?)\s*mL\b/i) : null;
+  $('[data-f=weeksPerMl]', node).value = volume
+    ? `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 4 }).format(Number(volume[1]) * 100)} units` : '';
 }
 
 function renumber() {
@@ -766,7 +810,31 @@ function renumber() {
   $('#itemCount').textContent = `${items.length} product${items.length === 1 ? '' : 's'}`;
 }
 
+// Only calculate a weekly duration from an unambiguous number of syringe units.
+function calculateWeeklyDuration(available, administration, frequency, type) {
+  const daysPerDose = { 'Once a week': 7, 'Twice a week': 3.5, 'Once every 10 days': 10, 'Once every 2 weeks': 14, 'Once daily': 1 }[frequency];
+  if (type !== 'Injectable' || !daysPerDose) return '';
+  const unitsMatch = available.trim().match(/^((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*(?:units?)?$/i);
+  const doseMatch = administration.trim().match(/^(?:inject\s+)?(\d+(?:\.\d+)?)\s*(?:units?)?\s*(?:\(\s*\d*\.?\d+\s*mL\s*\))?\s*(?:,\s*(?:subcutaneous|subcutaneously|sc))?$/i);
+  if (!unitsMatch || !doseMatch) return '';
+  const units = Number(unitsMatch[1].replace(/,/g, '')), dose = Number(doseMatch[1]);
+  if (!Number.isFinite(units) || !Number.isFinite(dose) || units <= 0 || dose <= 0) return '';
+  const duration = (units / dose) * daysPerDose / 7;
+  if (!Number.isFinite(duration)) return '';
+  const rounded = Math.round(duration);
+  const prefix = Number.isInteger(duration) ? '' : 'Approximately ';
+  return `${prefix}${new Intl.NumberFormat('en-US').format(rounded)} ${rounded === 1 ? 'week' : 'weeks'}`;
+}
+
+function syncDuration(node) {
+  $('[data-f=duration]', node).value = calculateWeeklyDuration(
+    $('[data-f=weeksPerMl]', node).value, $('[data-f=admin]', node).value,
+    $('[data-f=freq]', node).value, $('[data-f=type]', node).value
+  );
+}
+
 function readItem(node) {
+  syncDuration(node);
   const o = {};
   $$('[data-f]', node).forEach(el => {
     o[el.dataset.f] = el.classList.contains('multi')
@@ -776,11 +844,40 @@ function readItem(node) {
   return o;
 }
 
-// Total paid = sum of each order's Total; blank until at least one Total is entered
-function calcTotalPaid(items) {
+// Use the largest stated shipment count per pharmacy and rate type.
+function calcShippingFee(items) {
+  const groups = new Map();
+  let pending = false;
+  items.forEach(item => {
+    const pharmacy = (item.pharmacy || '').trim().toLowerCase();
+    const raw = String(item.shipments ?? '').trim();
+    const count = Number(raw);
+    if (!pharmacy || !raw || !Number.isSafeInteger(count) || count < 0) { pending = true; return; }
+    const group = groups.get(pharmacy) || { wellness: 0, other: 0 };
+    const type = item.group === 'Wellness & Vitality Collection' ? 'wellness' : 'other';
+    group[type] = Math.max(group[type], count);
+    groups.set(pharmacy, group);
+  });
+  let wellnessCount = 0, otherCount = 0;
+  groups.forEach(group => {
+    otherCount += group.other;
+    wellnessCount += group.wellness;
+  });
+  return { cents: wellnessCount * 999 + otherCount * 3500, wellnessCount, otherCount, pending };
+}
+
+// One signature charge per distinct pharmacy, independent of product count.
+function calcSignatureFee(items, signature) {
+  const cents = { 'Direct signature': 750, 'Indirect signature': 650 }[signature] || 0;
+  const count = new Set(items.map(i => (i.pharmacy || '').trim()).filter(Boolean)).size;
+  return { count, cents: cents * count, rateCents: cents };
+}
+
+// Sum product totals, shipping and signature charges in cents.
+function calcTotalPaid(items, signatureFeeCents = 0, shippingFeeCents = 0) {
   const vals = items.map(i => i.total).filter(v => v !== '' && !isNaN(Number(v)));
   if (!vals.length) return '';
-  return (vals.reduce((sum, v) => sum + Math.round(Number(v) * 100), 0) / 100).toFixed(2);
+  return ((vals.reduce((sum, v) => sum + Math.round(Number(v) * 100), 0) + signatureFeeCents + shippingFeeCents) / 100).toFixed(2);
 }
 
 function readState() {
@@ -795,10 +892,14 @@ function readState() {
     const o = readItem(n);
     const p = PRODUCTS[o.med];
     o.name = p ? p.name : '';
+    o.group = p ? p.group : '';
     o.tag = (p && p.tag) || (o.type === 'Injectable' ? FRIDGE : '');   // all injectables must be refrigerated
     return o;
   }).filter(o => o.name);
-  s.totalPaid = calcTotalPaid(s.items);
+  s.signatureFee = calcSignatureFee(s.items, s.signature);
+  // A mixed package incurs both the $35 and $9.99 charges.
+  s.shippingFee = calcShippingFee(s.items);
+  s.totalPaid = calcTotalPaid(s.items, s.signatureFee.cents, s.shippingFee.cents);
   return s;
 }
 
@@ -876,10 +977,11 @@ function itemCard(it) {
     ['Program', (it.program || '').replace(/-/g, '\u2011')], // non-breaking hyphen keeps "2mL-20mg" on one line
     ['Units available', inj ? it.weeksPerMl : ''],
     ['Supplies requested', it.supplies],
-    // row 2: Administration | Frequency | Number of shipments
+    // row 2: Administration | Frequency | No. of shipments
     ['Administration', it.admin],
     ['Frequency', it.freq],
-    ['Number of shipments', it.shipments]
+    ['No. of shipments', it.shipments],
+    ['Duration (as per your weekly dose)', it.duration]
   ].filter(([, v]) => v !== '' && v != null);
   let rows = '';
   for (let i = 0; i < stats.length; i += 3) {
@@ -916,7 +1018,7 @@ function shipmentsBar(value) {
   return `<tr><td style="padding:0 30px 10px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.hl}" style="border-collapse:separate;background-color:${C.hl};border:1px solid ${C.hlLine};border-radius:14px;box-shadow:inset 0 1px 0 #ffffff;">
 <tr>
-<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">Number of shipments</td>
+<td style="padding:14px 20px;font-family:${F};font-size:14px;line-height:20px;font-weight:700;color:${C.accentDark};">No. of shipments</td>
 <td align="right" style="padding:14px 20px;font-family:${F};font-size:22px;line-height:26px;font-weight:800;color:${C.navy};">${esc(value)}</td>
 </tr></table></td></tr>`;
 }
@@ -936,7 +1038,7 @@ function totalBar(amount, label, strong) {
 }
 
 function orderSection(it, i, n) {
-  const carrier = /^fedex/i.test(it.shipMethod) ? 'FedEx' : 'UPS';
+  const carrier = /^usps/i.test(it.shipMethod) ? 'USPS' : /^fedex/i.test(it.shipMethod) ? 'FedEx' : 'UPS';
   const title = it.orderNo ? `Order #${it.orderNo}` : (n > 1 ? `Order ${i + 1}` : 'Your order');
   const divider = i > 0
     ? `<tr><td style="padding:30px 30px 0;"><div style="border-top:2px dashed #cfe3ea;font-size:0;line-height:0;">&nbsp;</div></td></tr>`
@@ -1033,7 +1135,10 @@ function buildEmailBody(s) {
     ['Sale / promotion', s.promo || 'n/a'],
     ['Discount code', s.discount || 'n/a']
   ]);
-  const paid = s.totalPaid !== '' ? spacer(28) + totalBar(fmtMoney(s.totalPaid), 'Total', true) : '';
+  const feeLabel = `Signature fee (${s.signatureFee.count} ${s.signatureFee.count === 1 ? 'pharmacy' : 'pharmacies'})`;
+  const fee = s.signatureFee.cents ? spacer(20) + totalBar(fmtMoney((s.signatureFee.cents / 100).toFixed(2)), feeLabel, false) : '';
+  const shipping = s.shippingFee.cents ? spacer(20) + totalBar(fmtMoney((s.shippingFee.cents / 100).toFixed(2)), 'Shipping', false) : '';
+  const paid = s.totalPaid !== '' ? shipping + fee + spacer(28) + totalBar(fmtMoney(s.totalPaid), 'Total', true) : '';
 
   const orders = n
     ? s.items.map((it, i) => orderSection(it, i, n)).join('')
@@ -1128,6 +1233,12 @@ function render() {
     });
     const s = readState();
     $('[data-k=totalPaid]').value = s.totalPaid;
+    const shippingInfo = $('#shippingFeeInfo');
+    shippingInfo.hidden = !s.items.length;
+    shippingInfo.textContent = `Shipping: ${fmtMoney((s.shippingFee.cents / 100).toFixed(2))}${s.shippingFee.pending ? ' (enter pharmacy and shipment count for each order)' : ` (${s.shippingFee.wellnessCount} × $9.99, ${s.shippingFee.otherCount} × $35.00)`}`;
+    const feeInfo = $('#signatureFeeInfo');
+    feeInfo.hidden = !s.signatureFee.cents;
+    feeInfo.textContent = s.signatureFee.cents ? `Signature fee: ${fmtMoney((s.signatureFee.cents / 100).toFixed(2))} (${fmtMoney((s.signatureFee.rateCents / 100).toFixed(2))} × ${s.signatureFee.count} ${s.signatureFee.count === 1 ? 'pharmacy' : 'pharmacies'})` : '';
     const nums = $$('#items [data-f=orderNo]').map(el => el.value.trim()).filter(Boolean);
     $('#chipOrder').textContent = nums.length > 1 ? `${nums.length} orders` : nums.length ? `Order #${nums[0]}` : 'New order';
     if (!frameReady) return;
@@ -1146,28 +1257,32 @@ function missingHoldComments() {
       : [];
   });
 }
-function requireHoldComments(action) {
-  const missing = missingHoldComments();
-  if (!missing.length) return true;
-  missing.forEach(({ input }) => input.closest('.field').classList.add('invalid'));
-  toast('Add ' + joinList(missing.map(item => item.label)) + ' before ' + action, true);
-  missing[0].input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  missing[0].input.focus({ preventScroll: true });
-  return false;
-}
-
 function validate() {
   $$('.field.invalid').forEach(f => f.classList.remove('invalid'));
   const miss = [];
   const flag = (el, label) => { el.closest('.field').classList.add('invalid'); if (!miss.includes(label)) miss.push(label); };
   const name = $('[data-k=name]');
   if (!name.value.trim()) flag(name, 'Name');
+  const address = $('[data-k=address]'), signature = $('[data-k=signature]');
+  if (!address.value.trim()) flag(address, 'shipping address');
+  if (!signature.value) flag(signature, 'signature at delivery');
+  const via = $('#viaMulti');
+  if (!$$('input:checked', via).length) flag($('.multi-btn', via), 'order requested via');
   const items = $$('#items .item');
   items.forEach((node, i) => {
     const which = items.length > 1 ? ` in order ${i + 1}` : '';
-    const med = $('[data-f=med]', node), order = $('[data-f=orderNo]', node);
-    if (!med.value) flag(med, 'product' + which);
-    if (!order.value.trim()) flag(order, 'order #' + which);
+    const fields = [
+      ['orderNo', 'order #'], ['status', 'order status'], ['orderDate', 'order date'],
+      ['pharmacy', 'pharmacy'], ['shipments', 'number of shipments'], ['shipMethod', 'shipping method'],
+      ['processing', 'processing time'], ['clearedUntil', 'medically cleared until'], ['total', 'total'],
+      ['med', 'product'], ['type', 'form'], ['program', 'program'], ['freq', 'frequency'],
+      ['admin', 'administration'], ['weeksPerMl', 'units available'], ['supplies', 'supplies requested'],
+      ['medOwed', 'medication owed']
+    ];
+    fields.forEach(([key, label]) => {
+      const el = $(`[data-f="${key}"]`, node);
+      if (!el.disabled && (!el.value.trim() || !el.validity.valid)) flag(el, label + which);
+    });
   });
   missingHoldComments().forEach(({ input, label }) => flag(input, label));
   $$('#extraLinks .link-row').forEach(r => {
@@ -1177,6 +1292,19 @@ function validate() {
     if (!safeUrl(u.value.trim())) flag(u, 'full https link for each extra button');
   });
   return miss;
+}
+
+function requireValid(action) {
+  const missing = validate();
+  if (!missing.length) return true;
+  toast('Complete the highlighted fields before ' + action, true);
+  const field = $('.field.invalid');
+  if (field) {
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const control = $('input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button.multi-btn', field);
+    if (control) control.focus({ preventScroll: true });
+  }
+  return false;
 }
 
 function toPlain(html) {
@@ -1231,25 +1359,19 @@ function toast(msg, bad = false) {
 }
 
 $('#copyGmail').addEventListener('click', async () => {
-  const miss = validate();
-  if (miss.length) {
-    toast('Add the ' + joinList(miss) + ' before copying', true);
-    const f = $('.field.invalid');
-    if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    return;
-  }
+  if (!requireValid('copying')) return;
   const ok = await copyRich(buildEmailBody(readState()));
   toast(ok ? 'Copied. Open Gmail, click Compose, and paste.' : 'Copy was blocked. Click inside the preview, press Ctrl+A, then Ctrl+C.', !ok);
 });
 
 $('#copyCode').addEventListener('click', async () => {
-  if (!requireHoldComments('copying')) return;
+  if (!requireValid('copying')) return;
   const ok = await copyText(buildEmailDoc(readState()));
   toast(ok ? 'HTML code copied' : 'Copy was blocked. Use the download button instead.', !ok);
 });
 
 $('#download').addEventListener('click', () => {
-  if (!requireHoldComments('downloading')) return;
+  if (!requireValid('downloading')) return;
   const s = readState();
   const name = s.items.map(i => i.orderNo).filter(Boolean).join('_') || 'draft';
   const blob = new Blob([buildEmailDoc(s)], { type: 'text/html' });
@@ -1311,10 +1433,13 @@ formCol.addEventListener('input', e => {
   render();
 });
 formCol.addEventListener('change', e => {
+  const field = e.target.closest('.field');
+  if (field) field.classList.remove('invalid');
   const node = e.target.closest('.item');
   if (e.target.dataset.f === 'med') syncProduct(node);
   if (e.target.dataset.f === 'program') syncProgram(node);
-  if (e.target.dataset.f === 'type') syncType(node);
+  if (e.target.dataset.f === 'pharmacy') syncPharmacyShipping(node);
+  if (e.target.dataset.f === 'type') { syncType(node); syncProgram(node, false); }
   if (e.target.dataset.f === 'medOwed') syncOwed(node);
   if (e.target.dataset.f === 'status' || e.target.dataset.f === 'comments') syncOrderStatus(node);
   const multi = e.target.closest('.multi');
